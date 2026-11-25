@@ -218,7 +218,11 @@ export function ComposeModal({
               style={{ backgroundColor: "var(--tone-bg)", color: "var(--tone-ink)" }}
             >
               <div className="flex items-start gap-3">
-                <PeekingBuddy variant="sun" className="h-11 w-11 shrink-0" />
+                <PeekingBuddy
+                  variant="sun"
+                  color={tone === "sun" ? "var(--brand-coral)" : undefined}
+                  className="h-11 w-11 shrink-0"
+                />
                 <div>
                   <h2 className="text-[23px] leading-tight font-extrabold">
                     Share a discovery
@@ -258,7 +262,7 @@ export function ComposeModal({
                     }}
                     placeholder="Paste a link to an article, website, video, or tweet"
                     autoFocus
-                    className="w-full rounded-2xl border-2 border-line bg-canvas py-2.5 pr-4 pl-10 text-[15px] text-ink focus:border-cobalt focus:outline-none"
+                    className="w-full rounded-2xl border-2 border-line bg-canvas py-2.5 pr-4 pl-10 text-[15px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   />
                 </div>
                 {detected && (
@@ -281,7 +285,7 @@ export function ComposeModal({
                     if (error) setError("");
                   }}
                   placeholder="Share what caught your eye or made you think differently..."
-                  className="mt-1.5 w-full resize-none rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] leading-relaxed text-ink focus:border-cobalt focus:outline-none"
+                  className="mt-1.5 w-full resize-none rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] leading-relaxed text-ink transition-colors focus:border-cobalt focus:outline-none"
                 />
               </label>
 
@@ -298,7 +302,7 @@ export function ComposeModal({
                       ? detected.suggestedTitle
                       : "We will pull one from the link if you leave this blank"
                   }
-                  className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink focus:border-cobalt focus:outline-none"
+                  className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                 />
               </label>
 

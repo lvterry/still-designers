@@ -378,7 +378,7 @@ export function CardDetailModal({
                 type="text"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
-                className="w-full rounded-2xl bg-elevated px-4 py-2 text-[20px] font-extrabold text-ink focus:outline-none"
+                className="w-full rounded-2xl border-2 border-transparent bg-elevated px-4 py-2 text-[20px] font-extrabold text-ink transition-colors focus:border-ink focus:outline-none"
               />
             ) : (
               <h2 className="text-[22px] leading-[1.18] font-extrabold tracking-[-0.01em] sm:text-[27px]">
@@ -522,14 +522,14 @@ export function CardDetailModal({
                     value={draftPinLabel}
                     onChange={(e) => setDraftPinLabel(e.target.value)}
                     placeholder="Short label for this spot (optional)"
-                    className="w-full rounded-xl border-2 border-line bg-canvas px-3 py-2 text-[14px] text-ink focus:border-cobalt focus:outline-none"
+                    className="w-full rounded-xl border-2 border-line bg-canvas px-3 py-2 text-[14px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   />
                   <textarea
                     rows={2}
                     value={draftPinNote}
                     onChange={(e) => setDraftPinNote(e.target.value)}
                     placeholder="What caught your eye right here?"
-                    className="w-full resize-none rounded-xl border-2 border-line bg-canvas px-3 py-2 text-[14px] text-ink focus:border-cobalt focus:outline-none"
+                    className="w-full resize-none rounded-xl border-2 border-line bg-canvas px-3 py-2 text-[14px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   />
                   <div className="flex items-center gap-2">
                     <button
@@ -562,7 +562,7 @@ export function CardDetailModal({
                     rows={3}
                     value={editTake}
                     onChange={(e) => setEditTake(e.target.value)}
-                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-3.5 py-2.5 text-[15px] text-ink focus:border-cobalt focus:outline-none"
+                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-3.5 py-2.5 text-[15px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   />
                 </label>
                 <div className="flex items-center gap-2.5">
@@ -671,7 +671,7 @@ export function CardDetailModal({
                     value={perspectiveText}
                     onChange={(e) => setPerspectiveText(e.target.value)}
                     placeholder="Share a different angle on why this work matters..."
-                    className="w-full resize-none rounded-2xl border-2 border-line bg-canvas px-3.5 py-2.5 text-[14.5px] text-ink focus:border-cobalt focus:outline-none"
+                    className="w-full resize-none rounded-2xl border-2 border-line bg-canvas px-3.5 py-2.5 text-[14.5px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   />
                   <button
                     type="submit"
@@ -828,7 +828,7 @@ export function CardDetailModal({
                   <select
                     value={reportReason}
                     onChange={(e) => setReportReason(e.target.value)}
-                    className="w-full rounded-xl border-2 border-line bg-elevated px-3 py-1.5 text-[13.5px] text-ink"
+                    className="w-full rounded-xl border-2 border-line bg-elevated px-3 py-1.5 text-[13.5px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   >
                     <option>Missing attribution or credit issue</option>
                     <option>Copyright or permission concern</option>
@@ -1002,7 +1002,7 @@ export function CardDetailModal({
                               }
                             }}
                             placeholder={`Reply to ${cmt.authorName.split(" ")[0]}...`}
-                            className="flex-1 rounded-xl border-2 border-line bg-elevated px-3 py-1.5 text-[14px] text-ink focus:border-cobalt focus:outline-none"
+                            className="flex-1 rounded-xl border-2 border-line bg-elevated px-3 py-1.5 text-[14px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                           />
                           <button
                             type="button"
@@ -1051,7 +1051,7 @@ export function CardDetailModal({
                       ? "Join with one spark to leave a note..."
                       : "Share a curious thought..."
                   }
-                  className="min-h-[44px] max-h-[104px] flex-1 resize-none overflow-y-hidden rounded-2xl border-2 border-line bg-canvas px-3.5 py-[10px] text-[14.5px] leading-[20px] text-ink focus:border-cobalt focus:outline-none"
+                  className="min-h-[44px] max-h-[104px] flex-1 resize-none overflow-y-hidden rounded-2xl border-2 border-line bg-canvas px-3.5 py-[10px] text-[14.5px] leading-[20px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                 />
                 <button
                   type="submit"
@@ -1137,7 +1137,7 @@ function CommentRow({
             rows={2}
             value={editValue}
             onChange={(e) => onChangeEditValue(e.target.value)}
-            className="w-full rounded-xl border-2 border-cobalt bg-elevated px-3 py-1.5 text-[14px] text-ink focus:outline-none"
+            className="w-full rounded-xl border-2 border-line bg-elevated px-3 py-1.5 text-[14px] text-ink transition-colors focus:border-cobalt focus:outline-none"
           />
           <div className="flex items-center gap-2 text-[13px]">
             <button

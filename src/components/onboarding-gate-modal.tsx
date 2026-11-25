@@ -119,7 +119,7 @@ export function OnboardingGateModal({ onJoinedWithPost }: OnboardingGateModalPro
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Alex Kim"
-                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink focus:border-cobalt focus:outline-none"
+                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   />
                 </label>
 
@@ -130,7 +130,7 @@ export function OnboardingGateModal({ onJoinedWithPost }: OnboardingGateModalPro
                   <select
                     value={kind}
                     onChange={(e) => setKind(e.target.value as DiscoveryKind)}
-                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink focus:border-cobalt focus:outline-none"
+                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   >
                     {KINDS.map((k) => (
                       <option key={k.value} value={k.value}>
@@ -150,7 +150,7 @@ export function OnboardingGateModal({ onJoinedWithPost }: OnboardingGateModalPro
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Example: Playful scroll physics on Studio Mono"
-                  className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink focus:border-cobalt focus:outline-none"
+                  className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                 />
               </label>
 
@@ -164,7 +164,7 @@ export function OnboardingGateModal({ onJoinedWithPost }: OnboardingGateModalPro
                     value={originalCreator}
                     onChange={(e) => setOriginalCreator(e.target.value)}
                     placeholder="Creator or studio name"
-                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink focus:border-cobalt focus:outline-none"
+                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   />
                 </label>
 
@@ -177,7 +177,7 @@ export function OnboardingGateModal({ onJoinedWithPost }: OnboardingGateModalPro
                     value={sourceUrl}
                     onChange={(e) => setSourceUrl(e.target.value)}
                     placeholder="https://example.com"
-                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink focus:border-cobalt focus:outline-none"
+                    className="mt-1.5 w-full rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                   />
                 </label>
               </div>
@@ -191,7 +191,7 @@ export function OnboardingGateModal({ onJoinedWithPost }: OnboardingGateModalPro
                   value={personalTake}
                   onChange={(e) => setPersonalTake(e.target.value)}
                   placeholder="A couple of honest sentences is plenty..."
-                  className="mt-1.5 w-full resize-none rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink focus:border-cobalt focus:outline-none"
+                  className="mt-1.5 w-full resize-none rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] text-ink transition-colors focus:border-cobalt focus:outline-none"
                 />
               </label>
 

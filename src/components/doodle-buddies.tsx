@@ -5,14 +5,22 @@ import React from "react";
 export function PeekingBuddy({
   variant = "sun",
   className = "h-9 w-9",
+  color,
 }: {
   variant?: "sun" | "cloud" | "star" | "blob" | "eyes";
   className?: string;
+  color?: string;
 }) {
   if (variant === "sun") {
+    const sunColor = color ?? "var(--brand-sun)";
     return (
       <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
-        <g stroke="var(--brand-sun)" strokeWidth="4.5" strokeLinecap="round">
+        <g
+          stroke={sunColor}
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          className="transition-colors duration-200"
+        >
           <line x1="32" y1="6" x2="32" y2="12" />
           <line x1="32" y1="52" x2="32" y2="58" />
           <line x1="6" y1="32" x2="12" y2="32" />
@@ -22,7 +30,13 @@ export function PeekingBuddy({
           <line x1="50.5" y1="13.5" x2="46" y2="18" />
           <line x1="18" y1="46" x2="13.5" y2="50.5" />
         </g>
-        <circle cx="32" cy="32" r="16" fill="var(--brand-sun)" />
+        <circle
+          cx="32"
+          cy="32"
+          r="16"
+          fill={sunColor}
+          className="transition-colors duration-200"
+        />
         <circle cx="26.5" cy="30" r="2.4" fill="var(--ink-primary)" />
         <circle cx="37.5" cy="30" r="2.4" fill="var(--ink-primary)" />
         <path

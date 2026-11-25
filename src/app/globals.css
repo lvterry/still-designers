@@ -209,8 +209,10 @@ select {
   background-size: 26px 26px;
 }
 
-/* Focus ring */
-:focus-visible {
-  outline: 3px solid var(--brand-cobalt);
-  outline-offset: 2px;
+@layer base {
+  /* Focus ring */
+  :focus-visible {
+    outline: 3px solid var(--brand-cobalt);
+    outline-offset: 2px;
+  }
 }
