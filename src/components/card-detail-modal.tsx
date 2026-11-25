@@ -329,7 +329,7 @@ export function CardDetailModal({
             onPrev();
           }}
           aria-label="Previous card"
-          className="fixed left-3 z-50 hidden h-12 w-12 items-center justify-center rounded-full border-2 border-line bg-elevated text-ink transition-all hover:scale-105 hover:border-line-strong lg:flex xl:left-6"
+          className="fixed left-3 z-50 hidden h-12 w-12 items-center justify-center rounded-full border border-line bg-elevated text-ink transition-all hover:scale-105 hover:border-line-strong lg:flex xl:left-6"
         >
           <ArrowLeft className="h-5 w-5" />
         </motion.button>
@@ -347,7 +347,7 @@ export function CardDetailModal({
             onNext();
           }}
           aria-label="Next card"
-          className="fixed right-3 z-50 hidden h-12 w-12 items-center justify-center rounded-full border-2 border-line bg-elevated text-ink transition-all hover:scale-105 hover:border-line-strong lg:flex xl:right-6"
+          className="fixed right-3 z-50 hidden h-12 w-12 items-center justify-center rounded-full border border-line bg-elevated text-ink transition-all hover:scale-105 hover:border-line-strong lg:flex xl:right-6"
         >
           <ArrowRight className="h-5 w-5" />
         </motion.button>

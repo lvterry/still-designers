@@ -118,8 +118,10 @@ export function Header({
           title="Still Designers — New tools. Same curiosity."
         >
           <img
-            src="/logo.png"
+            src="/logo.svg"
             alt="Still Designers"
+            width={954}
+            height={483}
             className="h-10 w-auto transition-transform duration-200 group-hover:scale-105 group-hover:-rotate-1 sm:h-12"
           />
         </button>
@@ -133,7 +135,7 @@ export function Header({
               onClick={handleOpenNotifications}
               aria-label="Notifications"
               aria-expanded={notifOpen}
-              className="toy-button-soft relative inline-flex h-10 w-10 items-center justify-center rounded-2xl"
+              className="toy-button-soft relative flex h-10 w-10 items-center justify-center rounded-2xl"
             >
               <Bell className="h-[18px] w-[18px]" />
               {role !== "visitor" &&
@@ -235,7 +237,7 @@ export function Header({
                 aria-expanded={accountMenuOpen}
                 aria-haspopup="menu"
                 data-tone={currentUser?.tone ?? "pink"}
-                className="toy-button-soft inline-flex h-10 items-center gap-2 rounded-2xl px-2.5 pr-3 text-[14px] font-bold"
+                className="toy-button-soft flex h-10 items-center gap-2 rounded-2xl px-2.5 pr-3 text-[14px] font-bold"
                 style={
                   accountMenuOpen || view === "favorites" || view === "works"
                     ? { borderColor: "var(--ink-primary)" }
