@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, MessageCircle, ThumbsUp } from "lucide-react";
-import { DiscoveryArtwork } from "@/components/artwork-gallery";
+import { CardMediaPreview } from "@/components/discovery-media";
 import type { DiscoveryPost } from "@/types/community";
 
 interface DiscoveryCardProps {
@@ -25,6 +25,10 @@ export function DiscoveryCard({
   onSelect,
   slotRef,
 }: DiscoveryCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const isQuote = post.media.type === "quote";
+
   return (
     <div ref={slotRef} className="relative h-full">
       {isSelected ? (
@@ -58,6 +62,10 @@ export function DiscoveryCard({
               : { type: "spring", stiffness: 320, damping: 30, mass: 0.9 },
             rotate: { type: "spring", stiffness: 300, damping: 24 },
           }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onFocus={() => setIsHovered(true)}
+          onBlur={() => setIsHovered(false)}
           onClick={() => onSelect(post.id)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -67,70 +75,131 @@ export function DiscoveryCard({
           }}
           role="button"
           tabIndex={0}
-          aria-label={`Open discovery: ${post.title}`}
+          aria-label={
+            isQuote
+              ? `Open quote discovery: ${post.title}`
+              : `Open discovery: ${post.title}`
+          }
           style={{ borderRadius: 28 }}
           className="toy-card group flex h-full cursor-pointer flex-col overflow-hidden p-3.5 text-left select-none"
         >
-          {/* Visual cutout window — no border/shadow card-in-card */}
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[20px] bg-canvas">
-            <DiscoveryArtwork
-              variant={post.artwork}
-              customImageUrl={post.customImageUrl}
-              className="h-full w-full transition-transform duration-300 group-hover:scale-[1.03]"
-            />
+          {post.media.type === "quote" ? (
+            <>
+              {/* Full-bleed typographic postcard directly on the colored toy-card */}
+              <div className="flex flex-1 flex-col justify-between px-2 pt-2 pb-3">
+                <div>
+                  <span
+                    aria-hidden="true"
+                    className="-mb-2.5 block text-[44px] leading-none font-extrabold opacity-25 select-none"
+                  >
+                    “
+                  </span>
+                  <blockquote className="line-clamp-4 text-[18.5px] leading-[1.28] font-extrabold tracking-[-0.015em]">
+                    {post.media.quoteText}
+                  </blockquote>
+                </div>
 
-            {/* Subtle visual anchor dots preview */}
-            {post.visualPins.map((pin, idx) => (
-              <span
-                key={pin.id}
-                style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
-                className="pointer-events-none absolute flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-[10px] font-extrabold text-ink-on-bold shadow-sm"
-              >
-                {idx + 1}
-              </span>
-            ))}
-          </div>
+                <p
+                  className="mt-3 truncate text-[13px] font-bold"
+                  style={{ color: "var(--tone-ink-muted)" }}
+                >
+                  — {post.media.quoteAuthor}
+                  {post.media.quoteSource ? `, ${post.media.quoteSource}` : ""}
+                </p>
+              </div>
 
-          {/* Content — sentence case, no eyebrow labels, no decorative pills */}
-          <div className="flex flex-1 flex-col justify-between px-1.5 pt-3.5 pb-1">
-            <div>
-              <h2 className="text-[18px] leading-[1.22] font-extrabold tracking-[-0.01em]">
-                {post.title}
-              </h2>
-              <p
-                className="mt-1.5 line-clamp-2 text-[14px] leading-[1.42] font-medium"
-                style={{ color: "var(--tone-ink-muted)" }}
-              >
-                {post.personalTake}
-              </p>
-            </div>
+              <div
+                className="mx-1.5 border-t"
+                style={{
+                  borderColor:
+                    "color-mix(in oklch, var(--tone-ink) 16%, transparent)",
+                }}
+              />
 
-            <div
-              className="mt-4 flex flex-wrap items-center justify-between gap-2 pt-2 text-[13px] font-semibold"
-              style={{ color: "var(--tone-ink-muted)" }}
-            >
-              <span className="truncate">
-                {discoveredVia
-                  ? `Discovered via ${discoveredVia}`
-                  : `By ${post.authorName}`}
-              </span>
+              <div className="flex flex-col justify-between px-1.5 pt-3 pb-1">
+                <p
+                  className="line-clamp-2 text-[13.5px] leading-[1.42] font-medium"
+                  style={{ color: "var(--tone-ink-muted)" }}
+                >
+                  {post.personalTake}
+                </p>
 
-              <span className="flex items-center gap-2.5 whitespace-nowrap">
-                <span className="inline-flex items-center gap-1">
-                  <MessageCircle className="h-3.5 w-3.5" />
-                  {commentCount}
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <ThumbsUp className="h-3.5 w-3.5" />
-                  {post.reactions.thumbsUp.length}
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <Heart className="h-3.5 w-3.5" />
-                  {post.reactions.heart.length}
-                </span>
-              </span>
-            </div>
-          </div>
+                <div
+                  className="mt-3.5 flex flex-wrap items-center justify-between gap-2 pt-1.5 text-[13px] font-semibold"
+                  style={{ color: "var(--tone-ink-muted)" }}
+                >
+                  <span className="truncate">
+                    {discoveredVia
+                      ? `Discovered via ${discoveredVia}`
+                      : `By ${post.authorName}`}
+                  </span>
+
+                  <span className="flex items-center gap-2.5 whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1">
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      {commentCount}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <ThumbsUp className="h-3.5 w-3.5" />
+                      {post.reactions.thumbsUp.length}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Heart className="h-3.5 w-3.5" />
+                      {post.reactions.heart.length}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <CardMediaPreview
+                media={post.media}
+                visualPins={post.visualPins}
+                isCardHovered={isHovered}
+              />
+
+              <div className="flex flex-1 flex-col justify-between px-1.5 pt-3.5 pb-1">
+                <div>
+                  <h2 className="text-[18px] leading-[1.22] font-extrabold tracking-[-0.01em]">
+                    {post.title}
+                  </h2>
+                  <p
+                    className="mt-1.5 line-clamp-2 text-[14px] leading-[1.42] font-medium"
+                    style={{ color: "var(--tone-ink-muted)" }}
+                  >
+                    {post.personalTake}
+                  </p>
+                </div>
+
+                <div
+                  className="mt-4 flex flex-wrap items-center justify-between gap-2 pt-2 text-[13px] font-semibold"
+                  style={{ color: "var(--tone-ink-muted)" }}
+                >
+                  <span className="truncate">
+                    {discoveredVia
+                      ? `Discovered via ${discoveredVia}`
+                      : `By ${post.authorName}`}
+                  </span>
+
+                  <span className="flex items-center gap-2.5 whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1">
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      {commentCount}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <ThumbsUp className="h-3.5 w-3.5" />
+                      {post.reactions.thumbsUp.length}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Heart className="h-3.5 w-3.5" />
+                      {post.reactions.heart.length}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
         </motion.article>
       )}
     </div>

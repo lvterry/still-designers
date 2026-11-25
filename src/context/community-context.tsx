@@ -12,11 +12,11 @@ import {
 } from "@/data/seed";
 import type {
   AnalyticsSignals,
-  ArtworkVariant,
   Author,
   CardTone,
   CommentItem,
   DiscoveryKind,
+  DiscoveryMedia,
   DiscoveryPost,
   NotificationItem,
   PinnedPrompt,
@@ -24,7 +24,7 @@ import type {
   SavedEntry,
 } from "@/types/community";
 
-const STORAGE_KEY = "still-designers-proto-v2";
+const STORAGE_KEY = "still-designers-proto-v3";
 
 interface PersistedState {
   role: Role;
@@ -40,7 +40,7 @@ export interface CreatePostInput {
   title: string;
   kind: DiscoveryKind;
   tone: CardTone;
-  artwork: ArtworkVariant;
+  media: DiscoveryMedia;
   originalCreator: string;
   sourceName: string;
   sourceUrl: string;
@@ -121,13 +121,50 @@ const TILT_PAIRS: [number, number][] = [
   [1.4, -2.1],
 ];
 
-const ARTWORK_BY_KIND: Record<DiscoveryKind, ArtworkVariant> = {
-  website: "living-grid",
-  article: "paper-shader",
-  image: "micro-doodles",
-  video: "sound-buttons",
-  designer: "spatial-type",
-};
+function defaultMediaForKind(
+  kind: DiscoveryKind,
+  title: string,
+  personalTake: string,
+  originalCreator: string
+): DiscoveryMedia {
+  switch (kind) {
+    case "article":
+      return {
+        type: "quote",
+        quoteText: personalTake,
+        quoteAuthor: originalCreator,
+      };
+    case "video":
+      return {
+        type: "video",
+        url: "/mock-media/tactile-knobs.mp4",
+        posterUrl: "/mock-media/tactile-knobs-poster.png",
+        alt: title,
+        durationSeconds: 7,
+        hasAudio: true,
+      };
+    case "designer":
+      return {
+        type: "gif",
+        url: "/mock-media/spatial-type.gif",
+        posterUrl: "/mock-media/spatial-type-poster.png",
+        alt: title,
+      };
+    case "image":
+      return {
+        type: "image",
+        url: "/mock-media/riso-eyes-zine.png",
+        alt: title,
+      };
+    case "website":
+    default:
+      return {
+        type: "image",
+        url: "/mock-media/living-bookmarks.png",
+        alt: title,
+      };
+  }
+}
 
 function defaultState(): PersistedState {
   return {
@@ -154,7 +191,13 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as PersistedState;
-        if (parsed && Array.isArray(parsed.posts)) {
+        const hasValidPosts =
+          parsed &&
+          Array.isArray(parsed.posts) &&
+          parsed.posts.every(
+            (p) => p && p.media && typeof p.media.type === "string"
+          );
+        if (hasValidPosts) {
           setState({
             ...parsed,
             analytics: {
@@ -245,7 +288,12 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       title: title.trim(),
       kind,
       tone,
-      artwork: ARTWORK_BY_KIND[kind],
+      media: defaultMediaForKind(
+        kind,
+        title.trim(),
+        personalTake.trim(),
+        originalCreator.trim() || sourceHost
+      ),
       restTilt,
       hoverTilt,
       authorId: DEMO_USERS.maya.id,
@@ -305,7 +353,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       title: input.title.trim(),
       kind: input.kind,
       tone: input.tone,
-      artwork: input.artwork,
+      media: input.media,
       restTilt,
       hoverTilt,
       authorId: user.id,

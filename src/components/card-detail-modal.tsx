@@ -9,7 +9,6 @@ import {
   ExternalLink,
   Flag,
   Heart,
-  MapPin,
   MessageSquarePlus,
   Pencil,
   Quote,
@@ -19,7 +18,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { DiscoveryArtwork } from "@/components/artwork-gallery";
+import { ModalMediaStage } from "@/components/discovery-media";
 import { useCommunity } from "@/context/community-context";
 import { cn } from "@/lib/cn";
 import type { CommentItem, DiscoveryPost } from "@/types/community";
@@ -432,85 +431,43 @@ export function CardDetailModal({
         >
           {/* Left column: Visual + excerpts + personal take + lineage */}
           <div className="space-y-6 px-5 py-6 sm:px-8 lg:overflow-y-auto lg:border-r lg:border-line">
-            {/* Interactive visual stage with visual-anchored comment pins */}
+            {/* Interactive media stage (quote, image, GIF, or short video clip) */}
             <div>
-              <div
-                onClick={handleVisualClick}
-                className={cn(
-                  "relative aspect-[16/10] w-full overflow-hidden rounded-[22px] bg-canvas",
-                  pinMode && "cursor-crosshair ring-3 ring-cobalt"
-                )}
-              >
-                <DiscoveryArtwork
-                  variant={post.artwork}
-                  customImageUrl={post.customImageUrl}
-                  className="h-full w-full"
-                />
-
-                {post.visualPins.map((pin, idx) => {
-                  const active = selectedAnchor?.id === pin.id;
-                  return (
-                    <button
-                      key={pin.id}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedAnchor({
-                          type: "visual",
-                          id: pin.id,
-                          label: `Visual pin #${idx + 1} · ${pin.label}`,
-                        });
-                        setCommentFilter("visual");
-                      }}
-                      style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
-                      title={pin.label}
-                      className={cn(
-                        "absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-[13px] font-extrabold transition-transform hover:scale-115",
-                        active
-                          ? "scale-115 bg-coral text-ink-on-bold ring-4 ring-elevated"
-                          : "bg-ink text-ink-on-bold ring-2 ring-elevated"
-                      )}
-                    >
-                      {idx + 1}
-                    </button>
-                  );
-                })}
-
-                {draftPin && (
-                  <span
-                    style={{ left: `${draftPin.x}%`, top: `${draftPin.y}%` }}
-                    className="absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 animate-bounce items-center justify-center rounded-full bg-cobalt text-[13px] font-extrabold text-ink-on-bold ring-4 ring-elevated"
-                  >
-                    +
-                  </span>
-                )}
-              </div>
-
-              <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[13px]">
-                <span className="text-ink-secondary">
-                  {pinMode
-                    ? "Click anywhere on the visual to place a numbered pin."
-                    : post.visualPins.length > 0
-                      ? "Click a numbered dot on the visual to focus its discussion."
-                      : "Attach a note directly to any detail on this visual."}
-                </span>
-                <button
-                  type="button"
-                  onClick={() =>
-                    requireMemberAction(
-                      "Join in to pin notes directly on visuals.",
-                      () => {
-                        setPinMode((prev) => !prev);
-                        setDraftPin(null);
-                      }
-                    )
-                  }
-                  className="inline-flex items-center gap-1.5 font-bold text-cobalt hover:underline"
-                >
-                  <MapPin className="h-4 w-4" />
-                  {pinMode ? "Cancel pin mode" : "Pin a note on this visual"}
-                </button>
-              </div>
+              <ModalMediaStage
+                media={post.media}
+                visualPins={post.visualPins}
+                pinMode={pinMode}
+                draftPin={draftPin}
+                selectedAnchorId={selectedAnchor?.id}
+                onTogglePinMode={() =>
+                  requireMemberAction(
+                    "Join in to pin notes directly on visuals.",
+                    () => {
+                      setPinMode((prev) => !prev);
+                      setDraftPin(null);
+                    }
+                  )
+                }
+                onStageClick={handleVisualClick}
+                onSelectPin={(pin, idx) => {
+                  setSelectedAnchor({
+                    type: "visual",
+                    id: pin.id,
+                    label: `Visual pin #${idx + 1} · ${pin.label}`,
+                  });
+                  setCommentFilter("visual");
+                }}
+                onAnchorQuote={() => {
+                  if (post.media.type !== "quote") return;
+                  const firstExcerpt = post.excerpts[0];
+                  setSelectedAnchor({
+                    type: "excerpt",
+                    id: firstExcerpt?.id ?? "main-quote",
+                    label: `Main quote · '${post.media.quoteText.slice(0, 44)}...'`,
+                  });
+                  setCommentFilter("excerpt");
+                }}
+              />
 
               {draftPin && (
                 <form

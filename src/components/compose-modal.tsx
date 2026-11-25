@@ -5,14 +5,27 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link2, X } from "lucide-react";
 import { PeekingBuddy } from "@/components/doodle-buddies";
 import { useCommunity } from "@/context/community-context";
-import type { ArtworkVariant, CardTone, DiscoveryKind } from "@/types/community";
+import { cn } from "@/lib/cn";
+import type {
+  CardTone,
+  DiscoveryKind,
+  DiscoveryMedia,
+  MediaType,
+} from "@/types/community";
 
 const TONES: CardTone[] = ["coral", "cobalt", "sun", "emerald", "pink", "sky"];
+
+const MEDIA_FORMATS: { value: MediaType; label: string }[] = [
+  { value: "quote", label: "Quote" },
+  { value: "image", label: "Image" },
+  { value: "gif", label: "GIF" },
+  { value: "video", label: "Video clip" },
+];
 
 interface DetectedMeta {
   kind: DiscoveryKind;
   kindLabel: string;
-  artwork: ArtworkVariant;
+  mediaType: MediaType;
   host: string;
   creator: string;
   suggestedTitle: string;
@@ -34,17 +47,22 @@ function detectLinkMetadata(raw: string): DetectedMeta | null {
 
     let kind: DiscoveryKind = "website";
     let kindLabel = "website";
-    let artwork: ArtworkVariant = "living-grid";
+    let mediaType: MediaType = "image";
 
     if (
       host.includes("youtube.com") ||
       host.includes("youtu.be") ||
       host.includes("vimeo.com") ||
-      host.includes("loom.com")
+      host.includes("loom.com") ||
+      /\.(mp4|mov|webm)$/i.test(path)
     ) {
       kind = "video";
       kindLabel = "video";
-      artwork = "tactile-knobs";
+      mediaType = "video";
+    } else if (/\.gif$/i.test(path) || host.includes("giphy.com")) {
+      kind = "image";
+      kindLabel = "GIF";
+      mediaType = "gif";
     } else if (
       host === "x.com" ||
       host.includes("twitter.com") ||
@@ -53,7 +71,7 @@ function detectLinkMetadata(raw: string): DetectedMeta | null {
     ) {
       kind = "article";
       kindLabel = "post";
-      artwork = "micro-doodles";
+      mediaType = "quote";
     } else if (
       host.includes("substack.com") ||
       host.includes("medium.com") ||
@@ -65,18 +83,18 @@ function detectLinkMetadata(raw: string): DetectedMeta | null {
     ) {
       kind = "article";
       kindLabel = "article";
-      artwork = "paper-shader";
+      mediaType = "quote";
     } else if (
       host.includes("dribbble.com") ||
       host.includes("behance.net") ||
       host.includes("are.na") ||
       host.includes("cosmos.so") ||
       host.includes("figma.com") ||
-      /\.(png|jpe?g|gif|webp)$/i.test(path)
+      /\.(png|jpe?g|webp)$/i.test(path)
     ) {
       kind = "image";
-      kindLabel = "visual";
-      artwork = "clay-icons";
+      kindLabel = "image";
+      mediaType = "image";
     } else if (
       host.endsWith(".design") ||
       host.endsWith(".studio") ||
@@ -85,7 +103,7 @@ function detectLinkMetadata(raw: string): DetectedMeta | null {
     ) {
       kind = "designer";
       kindLabel = "designer";
-      artwork = "spatial-type";
+      mediaType = "gif";
     }
 
     const segments = path.split("/").filter(Boolean);
@@ -110,7 +128,7 @@ function detectLinkMetadata(raw: string): DetectedMeta | null {
     return {
       kind,
       kindLabel,
-      artwork,
+      mediaType,
       host,
       creator,
       suggestedTitle,
@@ -118,6 +136,61 @@ function detectLinkMetadata(raw: string): DetectedMeta | null {
   } catch {
     return null;
   }
+}
+
+function buildMediaPayload(params: {
+  mediaType: MediaType;
+  sourceUrl: string;
+  title: string;
+  quoteText: string;
+  personalTake: string;
+  creator: string;
+  host: string;
+}): DiscoveryMedia {
+  const { mediaType, sourceUrl, title, quoteText, personalTake, creator, host } =
+    params;
+  const trimmedUrl = sourceUrl.trim();
+  const normalizedUrl = /^https?:\/\//i.test(trimmedUrl)
+    ? trimmedUrl
+    : `https://${trimmedUrl}`;
+
+  if (mediaType === "quote") {
+    return {
+      type: "quote",
+      quoteText: quoteText.trim() || personalTake.trim(),
+      quoteAuthor: creator,
+      quoteSource: host,
+    };
+  }
+
+  if (mediaType === "gif") {
+    const isDirectGif = /\.gif(\?.*)?$/i.test(trimmedUrl);
+    return {
+      type: "gif",
+      url: isDirectGif ? normalizedUrl : "/mock-media/cursor-wave.gif",
+      posterUrl: isDirectGif ? normalizedUrl : "/mock-media/cursor-wave-poster.png",
+      alt: title,
+    };
+  }
+
+  if (mediaType === "video") {
+    const isDirectVideo = /\.(mp4|webm)(\?.*)?$/i.test(trimmedUrl);
+    return {
+      type: "video",
+      url: isDirectVideo ? normalizedUrl : "/mock-media/tactile-knobs.mp4",
+      posterUrl: "/mock-media/tactile-knobs-poster.png",
+      alt: title,
+      durationSeconds: 7,
+      hasAudio: true,
+    };
+  }
+
+  const isDirectImage = /\.(png|jpe?g|webp)(\?.*)?$/i.test(trimmedUrl);
+  return {
+    type: "image",
+    url: isDirectImage ? normalizedUrl : "/mock-media/living-bookmarks.png",
+    alt: title,
+  };
 }
 
 interface ComposeModalProps {
@@ -137,6 +210,9 @@ export function ComposeModal({
 
   const [sourceUrl, setSourceUrl] = useState("");
   const [title, setTitle] = useState("");
+  const [mediaType, setMediaType] = useState<MediaType>("image");
+  const [manualMediaChoice, setManualMediaChoice] = useState(false);
+  const [quoteText, setQuoteText] = useState("");
   const [personalTake, setPersonalTake] = useState("");
   const [tone, setTone] = useState<CardTone>("coral");
   const [attachToWeeklyPrompt, setAttachToWeeklyPrompt] = useState(false);
@@ -146,6 +222,9 @@ export function ComposeModal({
     if (!open) return;
     setSourceUrl("");
     setTitle("");
+    setMediaType("image");
+    setManualMediaChoice(false);
+    setQuoteText("");
     setPersonalTake("");
     setTone("coral");
     setAttachToWeeklyPrompt(Boolean(defaultPromptId));
@@ -154,10 +233,16 @@ export function ComposeModal({
 
   const detected = useMemo(() => detectLinkMetadata(sourceUrl), [sourceUrl]);
 
+  useEffect(() => {
+    if (detected && !manualMediaChoice) {
+      setMediaType(detected.mediaType);
+    }
+  }, [detected, manualMediaChoice]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!sourceUrl.trim()) {
-      setError("Paste a link to an article, website, video, or tweet first.");
+      setError("Paste a link to an article, website, video, or image first.");
       return;
     }
     if (!personalTake.trim()) {
@@ -168,21 +253,32 @@ export function ComposeModal({
     const meta = detected ?? {
       kind: "website" as DiscoveryKind,
       kindLabel: "website",
-      artwork: "living-grid" as ArtworkVariant,
+      mediaType,
       host: "stilldesigners.com",
       creator: "Original creator",
       suggestedTitle: "New design spark",
     };
 
+    const resolvedTitle = title.trim() || meta.suggestedTitle;
+    const media = buildMediaPayload({
+      mediaType,
+      sourceUrl,
+      title: resolvedTitle,
+      quoteText,
+      personalTake,
+      creator: meta.creator,
+      host: meta.host,
+    });
+
     const created = createPost({
-      title: title.trim() || meta.suggestedTitle,
+      title: resolvedTitle,
       kind: meta.kind,
       tone,
-      artwork: meta.artwork,
+      media,
       originalCreator: meta.creator,
       sourceName: meta.host,
       sourceUrl: sourceUrl.trim(),
-      excerptText: "",
+      excerptText: mediaType === "quote" ? quoteText.trim() : "",
       personalTake,
       promptId: attachToWeeklyPrompt ? pinnedPrompt.id : undefined,
     });
@@ -273,12 +369,57 @@ export function ComposeModal({
                 )}
               </label>
 
+              <div>
+                <span className="block text-[14px] font-bold text-ink">
+                  How it appears on the card
+                </span>
+                <div className="mt-2 grid grid-cols-4 gap-2">
+                  {MEDIA_FORMATS.map((fmt) => {
+                    const active = mediaType === fmt.value;
+                    return (
+                      <button
+                        key={fmt.value}
+                        type="button"
+                        onClick={() => {
+                          setMediaType(fmt.value);
+                          setManualMediaChoice(true);
+                        }}
+                        aria-pressed={active}
+                        className={cn(
+                          "rounded-2xl border-2 px-2.5 py-2 text-[13.5px] font-bold transition-colors",
+                          active
+                            ? "border-cobalt bg-subtle-surface text-ink"
+                            : "border-line bg-canvas text-ink-secondary hover:border-line-strong hover:text-ink"
+                        )}
+                      >
+                        {fmt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {mediaType === "quote" && (
+                <label className="block">
+                  <span className="block text-[14px] font-bold text-ink">
+                    Pull quote (optional)
+                  </span>
+                  <textarea
+                    rows={3}
+                    value={quoteText}
+                    onChange={(e) => setQuoteText(e.target.value)}
+                    placeholder="Paste the exact line you want featured on the front of the card..."
+                    className="mt-1.5 w-full resize-none rounded-2xl border-2 border-line bg-canvas px-4 py-2.5 text-[15px] leading-relaxed text-ink transition-colors focus:border-cobalt focus:outline-none"
+                  />
+                </label>
+              )}
+
               <label className="block">
                 <span className="block text-[14px] font-bold text-ink">
                   What inspired you?
                 </span>
                 <textarea
-                  rows={4}
+                  rows={3}
                   value={personalTake}
                   onChange={(e) => {
                     setPersonalTake(e.target.value);

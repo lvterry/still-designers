@@ -9,19 +9,37 @@ export type DiscoveryKind =
   | "video"
   | "designer";
 
-export type ArtworkVariant =
-  | "bookmark-era"
-  | "spatial-type"
-  | "ai-bloopers"
-  | "cursor-garden"
-  | "tactile-knobs"
-  | "living-grid"
-  | "sound-buttons"
-  | "clay-icons"
-  | "sketch-to-ui"
-  | "micro-doodles"
-  | "paper-shader"
-  | "mood-trays";
+export type MediaType = "quote" | "image" | "gif" | "video";
+
+export type DiscoveryMedia =
+  | {
+      type: "quote";
+      quoteText: string;
+      quoteAuthor: string;
+      quoteSource?: string;
+    }
+  | {
+      type: "image";
+      url: string;
+      alt: string;
+      caption?: string;
+    }
+  | {
+      type: "gif";
+      url: string;
+      posterUrl: string;
+      alt: string;
+      caption?: string;
+    }
+  | {
+      type: "video";
+      url: string;
+      posterUrl: string;
+      alt: string;
+      durationSeconds: number;
+      hasAudio?: boolean;
+      caption?: string;
+    };
 
 export interface Author {
   id: string;
@@ -77,8 +95,7 @@ export interface DiscoveryPost {
   title: string;
   kind: DiscoveryKind;
   tone: CardTone;
-  artwork: ArtworkVariant;
-  customImageUrl?: string;
+  media: DiscoveryMedia;
   restTilt: number; // degrees, e.g. -2.4 to 2.4
   hoverTilt: number; // degrees, shifts playfully on hover
   authorId: string;
