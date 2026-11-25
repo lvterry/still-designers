@@ -1,0 +1,216 @@
+@import "tailwindcss";
+
+:root {
+  /* Warm paper canvas & surfaces */
+  --surface-canvas: oklch(0.984 0.014 88);
+  --surface-header: oklch(0.984 0.014 88 / 0.92);
+  --surface-elevated: oklch(0.996 0.005 88);
+  --surface-muted: oklch(0.946 0.018 85);
+  --surface-subtle: oklch(0.964 0.013 86);
+  --surface-scrim: oklch(0.24 0.032 268 / 0.48);
+
+  /* Ink & typography */
+  --ink-primary: oklch(0.24 0.032 265);
+  --ink-secondary: oklch(0.45 0.026 265);
+  --ink-muted: oklch(0.58 0.02 265);
+  --ink-on-bold: oklch(0.992 0.005 88);
+  --ink-on-sun: oklch(0.24 0.04 55);
+
+  /* Dividers & outlines */
+  --border-subtle: oklch(0.895 0.018 84);
+  --border-strong: oklch(0.815 0.022 84);
+
+  /* Logo color palette in OKLCH — zero hex values */
+  --brand-cobalt: oklch(0.491 0.156 266.7);
+  --brand-cobalt-lip: oklch(0.375 0.145 266.7);
+  --brand-cobalt-tint: oklch(0.935 0.032 266.7);
+
+  --brand-emerald: oklch(0.649 0.145 155.9);
+  --brand-emerald-lip: oklch(0.505 0.132 155.9);
+  --brand-emerald-tint: oklch(0.942 0.034 155.9);
+
+  --brand-sun: oklch(0.851 0.166 90.1);
+  --brand-sun-lip: oklch(0.715 0.155 83.0);
+  --brand-sun-tint: oklch(0.962 0.042 90.1);
+
+  --brand-coral: oklch(0.692 0.183 34.0);
+  --brand-coral-lip: oklch(0.552 0.172 31.0);
+  --brand-coral-tint: oklch(0.952 0.038 34.0);
+
+  --brand-pink: oklch(0.745 0.180 344.0);
+  --brand-pink-lip: oklch(0.595 0.168 344.0);
+  --brand-pink-tint: oklch(0.954 0.036 344.0);
+
+  --brand-sky: oklch(0.666 0.143 250.8);
+  --brand-sky-lip: oklch(0.525 0.134 250.8);
+  --brand-sky-tint: oklch(0.942 0.032 250.8);
+
+  /* Status tokens */
+  --status-danger: oklch(0.58 0.21 25);
+  --status-danger-lip: oklch(0.45 0.19 25);
+  --status-danger-tint: oklch(0.95 0.035 25);
+  --status-success: var(--brand-emerald);
+
+  /* Elevation shadows */
+  --shadow-ambient: 0 12px 28px -8px oklch(0.28 0.04 265 / 0.12);
+  --shadow-modal: 0 30px 70px -16px oklch(0.22 0.04 265 / 0.28);
+  --shadow-float: 0 14px 32px -10px oklch(0.24 0.04 265 / 0.18);
+
+  /* Typography */
+  --font-allo: "Allo", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-canvas: var(--surface-canvas);
+  --color-header: var(--surface-header);
+  --color-elevated: var(--surface-elevated);
+  --color-muted-surface: var(--surface-muted);
+  --color-subtle-surface: var(--surface-subtle);
+  --color-scrim: var(--surface-scrim);
+
+  --color-ink: var(--ink-primary);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-on-bold: var(--ink-on-bold);
+  --color-ink-on-sun: var(--ink-on-sun);
+
+  --color-line: var(--border-subtle);
+  --color-line-strong: var(--border-strong);
+
+  --color-cobalt: var(--brand-cobalt);
+  --color-emerald: var(--brand-emerald);
+  --color-sun: var(--brand-sun);
+  --color-coral: var(--brand-coral);
+  --color-pink: var(--brand-pink);
+  --color-sky: var(--brand-sky);
+  --color-danger: var(--status-danger);
+
+  --font-sans: var(--font-allo);
+}
+
+/* Tone mapping for cards & accents */
+[data-tone="cobalt"] {
+  --tone-bg: var(--brand-cobalt);
+  --tone-lip: var(--brand-cobalt-lip);
+  --tone-tint: var(--brand-cobalt-tint);
+  --tone-ink: var(--ink-on-bold);
+  --tone-ink-muted: oklch(0.95 0.02 266.7 / 0.85);
+}
+
+[data-tone="emerald"] {
+  --tone-bg: var(--brand-emerald);
+  --tone-lip: var(--brand-emerald-lip);
+  --tone-tint: var(--brand-emerald-tint);
+  --tone-ink: var(--ink-on-bold);
+  --tone-ink-muted: oklch(0.97 0.015 155.9 / 0.88);
+}
+
+[data-tone="sun"] {
+  --tone-bg: var(--brand-sun);
+  --tone-lip: var(--brand-sun-lip);
+  --tone-tint: var(--brand-sun-tint);
+  --tone-ink: var(--ink-on-sun);
+  --tone-ink-muted: oklch(0.32 0.04 60 / 0.82);
+}
+
+[data-tone="coral"] {
+  --tone-bg: var(--brand-coral);
+  --tone-lip: var(--brand-coral-lip);
+  --tone-tint: var(--brand-coral-tint);
+  --tone-ink: var(--ink-on-bold);
+  --tone-ink-muted: oklch(0.98 0.015 34.0 / 0.88);
+}
+
+[data-tone="pink"] {
+  --tone-bg: var(--brand-pink);
+  --tone-lip: var(--brand-pink-lip);
+  --tone-tint: var(--brand-pink-tint);
+  --tone-ink: var(--ink-on-bold);
+  --tone-ink-muted: oklch(0.99 0.01 344.0 / 0.9);
+}
+
+[data-tone="sky"] {
+  --tone-bg: var(--brand-sky);
+  --tone-lip: var(--brand-sky-lip);
+  --tone-tint: var(--brand-sky-tint);
+  --tone-ink: var(--ink-on-bold);
+  --tone-ink-muted: oklch(0.97 0.015 250.8 / 0.88);
+}
+
+html,
+body {
+  background-color: var(--surface-canvas);
+  color: var(--ink-primary);
+  font-family: var(--font-allo);
+  font-variation-settings: "ROND" 100;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-variation-settings: "ROND" 100;
+}
+
+/* Tactile toy-block card & button physics */
+.toy-card {
+  background-color: var(--tone-bg);
+  color: var(--tone-ink);
+  box-shadow: 0 7px 0 var(--tone-lip), var(--shadow-ambient);
+}
+
+.toy-card:hover {
+  box-shadow: 0 10px 0 var(--tone-lip), 0 22px 36px -10px oklch(0.24 0.04 265 / 0.18);
+}
+
+.toy-button {
+  background-color: var(--tone-bg, var(--brand-cobalt));
+  color: var(--tone-ink, var(--ink-on-bold));
+  box-shadow: 0 4px 0 var(--tone-lip, var(--brand-cobalt-lip));
+  transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 140ms ease;
+}
+
+.toy-button:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  box-shadow: 0 5.5px 0 var(--tone-lip, var(--brand-cobalt-lip));
+}
+
+.toy-button:active:not(:disabled) {
+  transform: translateY(2.5px);
+  box-shadow: 0 1.5px 0 var(--tone-lip, var(--brand-cobalt-lip));
+}
+
+.toy-button-soft {
+  background-color: var(--surface-elevated);
+  color: var(--ink-primary);
+  border: 2px solid var(--border-subtle);
+  box-shadow: 0 3px 0 var(--border-subtle);
+  transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.toy-button-soft:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 0 var(--border-strong);
+}
+
+.toy-button-soft:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--border-strong);
+}
+
+/* Subtle dot paper background */
+.paper-dots {
+  background-image: radial-gradient(oklch(0.75 0.025 85 / 0.35) 1.25px, transparent 1.25px);
+  background-size: 26px 26px;
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 3px solid var(--brand-cobalt);
+  outline-offset: 2px;
+}
