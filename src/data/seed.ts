@@ -75,7 +75,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
     ],
     promptId: "prompt-bookmark-ai",
     reactions: {
-      thumbsUp: ["user-nora", "user-leo", "user-terry", "user-hana"],
       heart: ["user-maya", "user-nora", "user-priya", "user-leo", "user-tomas"],
     },
     reports: [],
@@ -107,7 +106,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       "We always post polished AI outputs, never the funny broken ones. Half my best recent lettering ideas started from a model hallucinating impossible curves and me redrawing them cleanly in vector.",
     visualPins: [],
     reactions: {
-      thumbsUp: ["user-maya", "user-leo", "user-nora", "user-tomas", "user-terry"],
       heart: ["user-maya", "user-hana", "user-nora"],
     },
     reports: [],
@@ -145,7 +143,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       },
     ],
     reactions: {
-      thumbsUp: ["user-maya", "user-priya", "user-terry"],
       heart: ["user-hana", "user-tomas", "user-maya"],
     },
     reports: [],
@@ -178,7 +175,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       "Every AI app gives users a dry 'temperature: 0.7' text box. Imagine tuning an AI assistant's playfulness with chunky plastic knobs that click softly into place.",
     visualPins: [],
     reactions: {
-      thumbsUp: ["user-maya", "user-priya", "user-hana"],
       heart: ["user-leo", "user-terry", "user-nora", "user-maya"],
     },
     reports: [],
@@ -219,7 +215,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
     ],
     promptId: "prompt-bookmark-ai",
     reactions: {
-      thumbsUp: ["user-maya", "user-terry", "user-priya"],
       heart: ["user-maya", "user-nora", "user-hana"],
     },
     reports: [],
@@ -249,7 +244,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       "I keep coming back to picture-book illustration for inspiration when designing AI companions. You don't need photorealistic avatars—two expressive eyes carry way more soul.",
     visualPins: [],
     reactions: {
-      thumbsUp: ["user-maya", "user-nora", "user-priya", "user-hana"],
       heart: ["user-maya", "user-leo", "user-tomas", "user-priya"],
     },
     reports: [],
@@ -280,7 +274,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       "This line explained why I've been bored of symmetrical bento dashboards lately. Even a tiny angle offset makes every item feel placed by hand.",
     visualPins: [],
     reactions: {
-      thumbsUp: ["user-maya", "user-terry", "user-hana"],
       heart: ["user-priya", "user-maya"],
     },
     reports: [],
@@ -311,7 +304,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       "Jules makes variable fonts feel like squishy balloons! It reminded me how much warmth pure typography can carry before you even add illustrations.",
     visualPins: [],
     reactions: {
-      thumbsUp: ["user-priya", "user-maya"],
       heart: ["user-leo", "user-hana"],
     },
     reports: [],
@@ -345,7 +337,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       "Coding prototypes directly from paper sketches made design fun again for me—especially testing motion like hover tilts and dialog springs that static frames never capture.",
     visualPins: [],
     reactions: {
-      thumbsUp: ["user-maya", "user-terry", "user-leo"],
       heart: ["user-priya", "user-tomas", "user-nora"],
     },
     reports: [],
@@ -378,7 +369,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       "I used to mute every web app automatically, until I tried Mina's demo with soft wood-block clicks on card flips. Subtle opt-in sound could make creative tools feel magical.",
     visualPins: [],
     reactions: {
-      thumbsUp: ["user-priya", "user-tomas", "user-maya"],
       heart: ["user-maya", "user-terry"],
     },
     reports: [],
@@ -413,7 +403,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       "Tried this warm cream tint on a side project yesterday and immediately noticed how much calmer bright cobalt and coral look on paper-toned backgrounds.",
     visualPins: [],
     reactions: {
-      thumbsUp: ["user-nora", "user-tomas"],
       heart: ["user-maya", "user-hana"],
     },
     reports: [],
@@ -444,7 +433,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       "Everything in enterprise SaaS has been 1px hairline grey for five years. Seeing chunky toy buttons come back with pure CSS makes me want to poke every button on the screen.",
     visualPins: [],
     reactions: {
-      thumbsUp: ["user-tomas", "user-terry"],
       heart: ["user-hana", "user-nora", "user-leo"],
     },
     reports: [],
@@ -464,7 +452,6 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     anchorId: "pin-1a",
     anchorLabel: "Visual pin #1 · Tilted color swatch stack",
     reactions: {
-      thumbsUp: ["user-maya", "user-nora"],
       heart: ["user-maya"],
     },
   },
@@ -478,7 +465,6 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     text: "Right?! Favicons all blur into tiny grey squares after tab 10. Color + one personal sentence sticks in memory.",
     createdAt: "2026-11-25T08:42:00Z",
     reactions: {
-      thumbsUp: ["user-tomas"],
       heart: ["user-tomas", "user-priya"],
     },
   },
@@ -491,7 +477,6 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     text: "Love this framing—AI made retrieval free, so the human value of bookmarking shifts from 'finding' to 'remembering why it moved me'.",
     createdAt: "2026-11-25T09:10:00Z",
     reactions: {
-      thumbsUp: ["user-maya", "user-terry"],
       heart: ["user-maya", "user-nora"],
     },
   },
@@ -507,7 +492,6 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     anchorId: "pin-2a",
     anchorLabel: "Visual pin #1 · Waving pointer character",
     reactions: {
-      thumbsUp: ["user-leo", "user-maya"],
       heart: ["user-leo"],
     },
   },
@@ -523,7 +507,6 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     anchorId: "main-quote",
     anchorLabel: "Main quote · 'Treating AI glitches like risograph misprints...'",
     reactions: {
-      thumbsUp: ["user-priya", "user-maya"],
       heart: ["user-priya"],
     },
   },
@@ -539,7 +522,6 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     anchorId: "pin-12a",
     anchorLabel: "Visual pin #1 · Shake-to-shuffle mood tray",
     reactions: {
-      thumbsUp: ["user-tomas"],
       heart: ["user-tomas", "user-terry"],
     },
   },
@@ -552,7 +534,6 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     text: "Love the gentle fading idea! My bookmark bar is basically a museum of projects from 2022—decaying gracefully feels kinder than manual cleanup.",
     createdAt: "2026-11-25T08:55:00Z",
     reactions: {
-      thumbsUp: [],
       heart: [],
     },
   },
@@ -565,7 +546,6 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     text: "Comparing AI glitches to risograph misprints completely reframes how I use image models during early moodboarding.",
     createdAt: "2026-11-25T08:12:00Z",
     reactions: {
-      thumbsUp: [],
       heart: [],
     },
   },

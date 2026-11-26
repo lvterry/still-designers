@@ -79,8 +79,7 @@ export interface CommentItem {
   anchorId?: string;
   anchorLabel?: string;
   reactions: {
-    thumbsUp: string[]; // userIds
-    heart: string[];
+    heart: string[]; // userIds
   };
 }
 
@@ -114,7 +113,6 @@ export interface DiscoveryPost {
 
   // Community interaction
   reactions: {
-    thumbsUp: string[];
     heart: string[];
   };
   reports: {

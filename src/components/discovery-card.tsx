@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, MessageCircle, ThumbsUp } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import { CardMediaPreview } from "@/components/discovery-media";
 import type { DiscoveryPost } from "@/types/community";
 
@@ -140,10 +140,6 @@ export function DiscoveryCard({
                       {commentCount}
                     </span>
                     <span className="inline-flex items-center gap-1">
-                      <ThumbsUp className="h-3.5 w-3.5" />
-                      {post.reactions.thumbsUp.length}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
                       <Heart className="h-3.5 w-3.5" />
                       {post.reactions.heart.length}
                     </span>
@@ -197,10 +193,6 @@ export function DiscoveryCard({
                     <span className="inline-flex items-center gap-1">
                       <MessageCircle className="h-3.5 w-3.5" />
                       {commentCount}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <ThumbsUp className="h-3.5 w-3.5" />
-                      {post.reactions.thumbsUp.length}
                     </span>
                     <span className="inline-flex items-center gap-1">
                       <Heart className="h-3.5 w-3.5" />

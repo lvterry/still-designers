@@ -77,7 +77,7 @@ interface CommunityContextValue {
   deletePost: (postId: string) => void;
   adminRemovePost: (postId: string) => void;
   reportPost: (postId: string, reason: string) => void;
-  togglePostReaction: (postId: string, kind: "thumbsUp" | "heart") => void;
+  togglePostReaction: (postId: string) => void;
   toggleSavePost: (postId: string) => void;
   isPostSaved: (postId: string) => boolean;
   addVisualPin: (postId: string, x: number, y: number, label: string, commentText: string) => void;
@@ -93,7 +93,7 @@ interface CommunityContextValue {
   }) => void;
   updateComment: (commentId: string, text: string) => void;
   deleteComment: (commentId: string) => void;
-  toggleCommentReaction: (commentId: string, kind: "thumbsUp" | "heart") => void;
+  toggleCommentReaction: (commentId: string) => void;
 
   // Notifications
   markAllNotificationsRead: () => void;
@@ -145,6 +145,20 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         if (hasValidPosts) {
           setState({
             ...parsed,
+            posts: parsed.posts.map((p) => ({
+              ...p,
+              reactions: {
+                heart: Array.isArray(p.reactions?.heart) ? p.reactions.heart : [],
+              },
+            })),
+            comments: Array.isArray(parsed.comments)
+              ? parsed.comments.map((c) => ({
+                  ...c,
+                  reactions: {
+                    heart: Array.isArray(c.reactions?.heart) ? c.reactions.heart : [],
+                  },
+                }))
+              : INITIAL_COMMENTS,
             notifications: Array.isArray(parsed.notifications)
               ? parsed.notifications.filter((n) => n && n.type === "reply")
               : INITIAL_NOTIFICATIONS,
@@ -243,7 +257,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       personalTake: input.personalTake.trim(),
       visualPins: [],
       promptId: input.promptId,
-      reactions: { thumbsUp: [], heart: [] },
+      reactions: { heart: [] },
       reports: [],
     };
 
@@ -296,7 +310,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       personalTake: input.personalTake.trim(),
       visualPins: [],
       promptId: input.promptId,
-      reactions: { thumbsUp: [], heart: [] },
+      reactions: { heart: [] },
       reports: [],
     };
 
@@ -376,7 +390,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
-  const togglePostReaction = (postId: string, kind: "thumbsUp" | "heart") => {
+  const togglePostReaction = (postId: string) => {
     if (!currentUser) return;
     const uid = currentUser.id;
     // Per PRD: reactions are visible without creating individual notifications
@@ -386,13 +400,12 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         ...next,
         posts: next.posts.map((p) => {
           if (p.id !== postId) return p;
-          const list = p.reactions[kind];
+          const list = p.reactions.heart;
           const exists = list.includes(uid);
           return {
             ...p,
             reactions: {
-              ...p.reactions,
-              [kind]: exists ? list.filter((id) => id !== uid) : [...list, uid],
+              heart: exists ? list.filter((id) => id !== uid) : [...list, uid],
             },
           };
         }),
@@ -453,7 +466,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         anchorType: "visual",
         anchorId: pinId,
         anchorLabel: `Visual pin #${pinNumber} · ${cleanLabel}`,
-        reactions: { thumbsUp: [], heart: [] },
+        reactions: { heart: [] },
       };
 
       const nextNotifications = [...next.notifications];
@@ -513,7 +526,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         anchorType,
         anchorId,
         anchorLabel,
-        reactions: { thumbsUp: [], heart: [] },
+        reactions: { heart: [] },
       };
 
       const nextNotifications = [...next.notifications];
@@ -558,7 +571,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
-  const toggleCommentReaction = (commentId: string, kind: "thumbsUp" | "heart") => {
+  const toggleCommentReaction = (commentId: string) => {
     if (!currentUser) return;
     const uid = currentUser.id;
     setState((prev) => {
@@ -567,13 +580,12 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         ...next,
         comments: next.comments.map((c) => {
           if (c.id !== commentId) return c;
-          const list = c.reactions[kind];
+          const list = c.reactions.heart;
           const exists = list.includes(uid);
           return {
             ...c,
             reactions: {
-              ...c.reactions,
-              [kind]: exists ? list.filter((id) => id !== uid) : [...list, uid],
+              heart: exists ? list.filter((id) => id !== uid) : [...list, uid],
             },
           };
         }),

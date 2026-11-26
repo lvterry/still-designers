@@ -12,7 +12,6 @@ import {
   Pencil,
   Reply,
   ShieldAlert,
-  ThumbsUp,
   Trash2,
   X,
 } from "lucide-react";
@@ -223,9 +222,6 @@ export function CardDetailModal({
     (post.media.type === "link" &&
       post.media.embedType !== "youtube" &&
       Boolean(post.media.thumbnailUrl));
-  const thumbsActive = Boolean(
-    currentUser && post.reactions.thumbsUp.includes(currentUser.id)
-  );
   const heartActive = Boolean(
     currentUser && post.reactions.heart.includes(currentUser.id)
   );
@@ -558,33 +554,18 @@ export function CardDetailModal({
                   type="button"
                   onClick={() =>
                     requireSignedInAction("Join in to cheer on posts with reactions.", () =>
-                      togglePostReaction(post.id, "thumbsUp")
+                      togglePostReaction(post.id)
                     )
                   }
-                  data-tone={thumbsActive ? "sun" : undefined}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-[14px] font-bold",
-                    thumbsActive ? "toy-button" : "toy-button-soft"
-                  )}
-                >
-                  <ThumbsUp className="h-4 w-4" />
-                  <span>{post.reactions.thumbsUp.length}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    requireSignedInAction("Join in to cheer on posts with reactions.", () =>
-                      togglePostReaction(post.id, "heart")
-                    )
-                  }
+                  aria-pressed={heartActive}
+                  aria-label={heartActive ? "Remove heart" : "Heart this discovery"}
                   data-tone={heartActive ? "pink" : undefined}
                   className={cn(
                     "inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-[14px] font-bold",
                     heartActive ? "toy-button" : "toy-button-soft"
                   )}
                 >
-                  <Heart className="h-4 w-4" />
+                  <Heart className={cn("h-4 w-4", heartActive && "fill-current")} />
                   <span>{post.reactions.heart.length}</span>
                 </button>
 
@@ -800,9 +781,9 @@ export function CardDetailModal({
                           setEditingCommentId(null);
                         }}
                         onDelete={() => deleteComment(cmt.id)}
-                        onReact={(kind) =>
+                        onReact={() =>
                           requireSignedInAction("Join in to react to comments.", () =>
-                            toggleCommentReaction(cmt.id, kind)
+                            toggleCommentReaction(cmt.id)
                           )
                         }
                         onReplyClick={() =>
@@ -835,9 +816,9 @@ export function CardDetailModal({
                                 setEditingCommentId(null);
                               }}
                               onDelete={() => deleteComment(rep.id)}
-                              onReact={(kind) =>
+                              onReact={() =>
                                 requireSignedInAction("Join in to react to replies.", () =>
-                                  toggleCommentReaction(rep.id, kind)
+                                  toggleCommentReaction(rep.id)
                                 )
                               }
                             />
@@ -970,11 +951,10 @@ function CommentRow({
   onCancelEdit: () => void;
   onSaveEdit: () => void;
   onDelete: () => void;
-  onReact: (kind: "thumbsUp" | "heart") => void;
+  onReact: () => void;
   onReplyClick?: () => void;
 }) {
   const mine = Boolean(currentUserId && comment.authorId === currentUserId);
-  const upActive = Boolean(currentUserId && comment.reactions.thumbsUp.includes(currentUserId));
   const heartActive = Boolean(currentUserId && comment.reactions.heart.includes(currentUserId));
 
   return (
@@ -1019,25 +999,15 @@ function CommentRow({
       <div className="flex flex-wrap items-center gap-3.5 pt-0.5 text-[12.5px] font-semibold text-ink-muted">
         <button
           type="button"
-          onClick={() => onReact("thumbsUp")}
-          className={cn(
-            "inline-flex items-center gap-1 hover:text-ink",
-            upActive && "text-cobalt"
-          )}
-        >
-          <ThumbsUp className="h-3.5 w-3.5" />
-          {comment.reactions.thumbsUp.length}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onReact("heart")}
+          onClick={onReact}
+          aria-pressed={heartActive}
+          aria-label={heartActive ? "Remove heart" : "Heart this comment"}
           className={cn(
             "inline-flex items-center gap-1 hover:text-ink",
             heartActive && "text-pink"
           )}
         >
-          <Heart className="h-3.5 w-3.5" />
+          <Heart className={cn("h-3.5 w-3.5", heartActive && "fill-current")} />
           {comment.reactions.heart.length}
         </button>
 
