@@ -125,7 +125,7 @@ export function PrototypeDock({
                       onClick={() => onSelectPostById(rp.id)}
                       className="truncate text-left font-semibold text-ink hover:underline"
                     >
-                      {rp.title}
+                      {rp.title || `Discovery by ${rp.originalCreator}`}
                     </button>
                     <button
                       type="button"

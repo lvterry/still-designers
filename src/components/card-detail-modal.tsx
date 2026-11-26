@@ -291,7 +291,7 @@ export function CardDetailModal({
 
   const handleSavePostEdit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editTitle.trim() || !editTake.trim()) return;
+    if (!editTake.trim()) return;
     updatePost(post.id, {
       title: editTitle,
       personalTake: editTake,
@@ -304,7 +304,7 @@ export function CardDetailModal({
       className="fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-6 md:p-8"
       role="dialog"
       aria-modal="true"
-      aria-label={post.title}
+      aria-label={post.title || `Discovery by ${post.originalCreator}`}
     >
       {/* Backdrop */}
       <motion.div
@@ -377,16 +377,22 @@ export function CardDetailModal({
                 type="text"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
+                placeholder="Title (optional)"
                 className="w-full rounded-2xl border-2 border-transparent bg-elevated px-4 py-2 text-[20px] font-extrabold text-ink transition-colors focus:border-ink focus:outline-none"
               />
             ) : (
-              <h2 className="text-[22px] leading-[1.18] font-extrabold tracking-[-0.01em] sm:text-[27px]">
-                {post.title}
-              </h2>
+              post.title && (
+                <h2 className="text-[22px] leading-[1.18] font-extrabold tracking-[-0.01em] sm:text-[27px]">
+                  {post.title}
+                </h2>
+              )
             )}
 
             <div
-              className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] font-semibold"
+              className={cn(
+                "flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] font-semibold",
+                (editingPost || post.title) && "mt-2"
+              )}
               style={{ color: "var(--tone-ink-muted)" }}
             >
               <span>
@@ -394,15 +400,20 @@ export function CardDetailModal({
                 {post.editedAt ? " · Edited" : ""}
               </span>
               <span aria-hidden="true">·</span>
-              <a
-                href={post.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 underline decoration-2 underline-offset-3 hover:opacity-100"
-              >
-                Credit: {post.originalCreator} ({post.sourceName})
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
+              {post.sourceUrl ? (
+                <a
+                  href={post.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 underline decoration-2 underline-offset-3 hover:opacity-100"
+                >
+                  Credit: {post.originalCreator}
+                  {post.sourceName ? ` (${post.sourceName})` : ""}
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              ) : (
+                <span>Credit: {post.originalCreator}</span>
+              )}
             </div>
           </div>
 

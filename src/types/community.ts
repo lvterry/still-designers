@@ -9,7 +9,7 @@ export type DiscoveryKind =
   | "video"
   | "designer";
 
-export type MediaType = "quote" | "image" | "gif" | "video";
+export type MediaType = "quote" | "image" | "gif" | "video" | "link";
 
 export type DiscoveryMedia =
   | {
@@ -34,11 +34,23 @@ export type DiscoveryMedia =
   | {
       type: "video";
       url: string;
-      posterUrl: string;
+      posterUrl?: string;
       alt: string;
-      durationSeconds: number;
+      durationSeconds?: number;
       hasAudio?: boolean;
       caption?: string;
+    }
+  | {
+      type: "link";
+      url: string;
+      host: string;
+      embedType: "youtube" | "tweet" | "webpage";
+      youtubeId?: string;
+      thumbnailUrl?: string;
+      previewTitle?: string;
+      previewDescription?: string;
+      tweetText?: string;
+      tweetAuthor?: string;
     };
 
 export interface Author {

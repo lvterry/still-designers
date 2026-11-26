@@ -77,8 +77,8 @@ export function DiscoveryCard({
           tabIndex={0}
           aria-label={
             isQuote
-              ? `Open quote discovery: ${post.title}`
-              : `Open discovery: ${post.title}`
+              ? `Open quote discovery: ${post.title || post.originalCreator}`
+              : `Open discovery: ${post.title || post.originalCreator}`
           }
           style={{ borderRadius: 28 }}
           className="toy-card group flex h-full cursor-pointer flex-col overflow-hidden p-3.5 text-left select-none"
@@ -161,15 +161,26 @@ export function DiscoveryCard({
 
               <div className="flex flex-1 flex-col justify-between px-1.5 pt-3.5 pb-1">
                 <div>
-                  <h2 className="text-[18px] leading-[1.22] font-extrabold tracking-[-0.01em]">
-                    {post.title}
-                  </h2>
-                  <p
-                    className="mt-1.5 line-clamp-2 text-[14px] leading-[1.42] font-medium"
-                    style={{ color: "var(--tone-ink-muted)" }}
-                  >
-                    {post.personalTake}
-                  </p>
+                  {post.title ? (
+                    <>
+                      <h2 className="text-[18px] leading-[1.22] font-extrabold tracking-[-0.01em]">
+                        {post.title}
+                      </h2>
+                      <p
+                        className="mt-1.5 line-clamp-2 text-[14px] leading-[1.42] font-medium"
+                        style={{ color: "var(--tone-ink-muted)" }}
+                      >
+                        {post.personalTake}
+                      </p>
+                    </>
+                  ) : (
+                    <p
+                      className="line-clamp-3 text-[15px] leading-[1.38] font-bold"
+                      style={{ color: "var(--tone-ink)" }}
+                    >
+                      {post.personalTake}
+                    </p>
+                  )}
                 </div>
 
                 <div

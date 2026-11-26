@@ -10,6 +10,7 @@ import {
   INITIAL_POSTS,
   INITIAL_SAVES,
 } from "@/data/seed";
+import { extractHost, normalizeUrl } from "@/lib/link-utils";
 import type {
   AnalyticsSignals,
   Author,
@@ -344,9 +345,10 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     const user = currentUser ?? DEMO_USERS.maya;
     const now = new Date().toISOString();
     const [restTilt, hoverTilt] = TILT_PAIRS[state.posts.length % TILT_PAIRS.length];
-    const cleanUrl = input.sourceUrl.trim().startsWith("http")
-      ? input.sourceUrl.trim()
-      : `https://${input.sourceUrl.trim() || "stilldesigners.com"}`;
+    const trimmedUrl = input.sourceUrl.trim();
+    const cleanUrl = trimmedUrl ? (normalizeUrl(trimmedUrl) ?? trimmedUrl) : "";
+    const resolvedSourceName =
+      input.sourceName.trim() || (cleanUrl ? extractHost(cleanUrl) : "");
 
     const newPost: DiscoveryPost = {
       id: `post-${Date.now()}`,
@@ -364,7 +366,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       createdAt: now,
       lastActivityAt: now,
       originalCreator: input.originalCreator.trim() || user.name,
-      sourceName: input.sourceName.trim() || cleanUrl.replace(/^https?:\/\//, ""),
+      sourceName: resolvedSourceName,
       sourceUrl: cleanUrl,
       attributionNote:
         "Shared for inspiration and discussion—credit belongs to the original creator.",
@@ -515,7 +517,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
           type: "perspective",
           actorName: currentUser.name,
           postId,
-          postTitle: post.title,
+          postTitle: post.title || post.originalCreator || "Untitled discovery",
           snippet: `Added a perspective: "${text.trim().slice(0, 64)}"`,
           createdAt: now,
           read: false,
@@ -584,7 +586,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
           type: "reply",
           actorName: currentUser.name,
           postId,
-          postTitle: post.title,
+          postTitle: post.title || post.originalCreator || "Untitled discovery",
           snippet: `Pinned a note on '${cleanLabel}'`,
           createdAt: now,
           read: false,
@@ -644,7 +646,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
           type: "reply",
           actorName: currentUser.name,
           postId,
-          postTitle: post.title,
+          postTitle: post.title || post.originalCreator || "Untitled discovery",
           snippet: text.trim().slice(0, 72),
           createdAt: now,
           read: false,

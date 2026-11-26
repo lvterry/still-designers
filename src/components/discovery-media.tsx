@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import {
+  ExternalLink,
+  Globe,
   MapPin,
   Pause,
   Play,
@@ -36,6 +38,15 @@ export function CardMediaPreview({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [cardVideoDuration, setCardVideoDuration] = useState(
+    media.type === "video" ? (media.durationSeconds ?? 0) : 0
+  );
+  const [linkImgError, setLinkImgError] = useState(false);
+
+  useEffect(() => {
+    setCardVideoDuration(media.type === "video" ? (media.durationSeconds ?? 0) : 0);
+    setLinkImgError(false);
+  }, [media]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
@@ -98,7 +109,7 @@ export function CardMediaPreview({
           <video
             ref={videoRef}
             src={media.url}
-            poster={media.posterUrl}
+            poster={media.posterUrl || undefined}
             aria-label={media.alt}
             muted
             loop
@@ -106,6 +117,12 @@ export function CardMediaPreview({
             preload="metadata"
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
+            onLoadedMetadata={(e) => {
+              const dur = e.currentTarget.duration;
+              if (Number.isFinite(dur) && dur > 0) {
+                setCardVideoDuration(dur);
+              }
+            }}
             onTimeUpdate={(e) => {
               const el = e.currentTarget;
               if (el.duration > 0) {
@@ -129,10 +146,14 @@ export function CardMediaPreview({
           </span>
 
           {/* Bottom-right duration + audio badge */}
-          <span className="pointer-events-none absolute right-2.5 bottom-2.5 inline-flex items-center gap-1 rounded-lg bg-ink/75 px-2 py-0.5 text-[11px] font-bold text-ink-on-bold tabular-nums backdrop-blur-xs">
-            {media.hasAudio && <Volume2 className="h-3 w-3" />}
-            <span>{formatDuration(media.durationSeconds)}</span>
-          </span>
+          {(cardVideoDuration > 0 || media.hasAudio) && (
+            <span className="pointer-events-none absolute right-2.5 bottom-2.5 inline-flex items-center gap-1 rounded-lg bg-ink/75 px-2 py-0.5 text-[11px] font-bold text-ink-on-bold tabular-nums backdrop-blur-xs">
+              {media.hasAudio && <Volume2 className="h-3 w-3" />}
+              {cardVideoDuration > 0 && (
+                <span>{formatDuration(cardVideoDuration)}</span>
+              )}
+            </span>
+          )}
 
           {/* Thin progress bar along bottom edge while playing */}
           {isPlaying && (
@@ -145,6 +166,67 @@ export function CardMediaPreview({
                 style={{ width: `${progress}%` }}
               />
             </span>
+          )}
+        </>
+      )}
+
+      {media.type === "link" && (
+        <>
+          {media.embedType === "youtube" && (media.thumbnailUrl || media.youtubeId) ? (
+            <>
+              <img
+                src={
+                  media.thumbnailUrl ||
+                  `https://i.ytimg.com/vi/${media.youtubeId}/hqdefault.jpg`
+                }
+                alt={media.previewTitle || "YouTube video"}
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              />
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 flex items-center justify-center"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-ink/75 text-ink-on-bold shadow-sm backdrop-blur-xs transition-transform duration-200 group-hover:scale-105">
+                  <Play className="ml-0.5 h-5 w-5 fill-current" />
+                </span>
+              </span>
+              <span className="pointer-events-none absolute bottom-2.5 left-2.5 rounded-lg bg-ink/75 px-2 py-0.5 text-[11px] font-extrabold text-ink-on-bold backdrop-blur-xs">
+                YouTube
+              </span>
+            </>
+          ) : media.thumbnailUrl && !linkImgError ? (
+            <>
+              <img
+                src={media.thumbnailUrl}
+                alt={media.previewTitle || media.host}
+                onError={() => setLinkImgError(true)}
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              />
+              <span className="pointer-events-none absolute bottom-2.5 left-2.5 max-w-[80%] truncate rounded-lg bg-ink/75 px-2 py-0.5 text-[11px] font-extrabold text-ink-on-bold backdrop-blur-xs">
+                {media.host}
+              </span>
+            </>
+          ) : (
+            <div className="flex h-full w-full flex-col justify-between bg-elevated p-4 text-ink">
+              <div className="flex items-center justify-between gap-2 text-[12px] font-bold text-ink-muted">
+                <span className="inline-flex items-center gap-1.5 truncate">
+                  <Globe className="h-3.5 w-3.5 shrink-0 text-cobalt" />
+                  <span className="truncate">{media.host}</span>
+                </span>
+                <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-70" />
+              </div>
+
+              <p className="line-clamp-3 text-[14.5px] leading-snug font-bold text-ink">
+                {media.tweetText ||
+                  media.previewTitle ||
+                  media.previewDescription ||
+                  media.url}
+              </p>
+
+              <span className="truncate text-[12px] font-semibold text-ink-muted">
+                {media.tweetAuthor || media.host}
+              </span>
+            </div>
           )}
         </>
       )}
@@ -192,8 +274,9 @@ export function ModalMediaStage({
   const [videoMuted, setVideoMuted] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(
-    media.type === "video" ? media.durationSeconds : 0
+    media.type === "video" ? (media.durationSeconds ?? 0) : 0
   );
+  const [linkImgError, setLinkImgError] = useState(false);
 
   // Reset media playback state when switching cards
   useEffect(() => {
@@ -201,7 +284,8 @@ export function ModalMediaStage({
     setVideoPlaying(true);
     setVideoMuted(true);
     setCurrentTime(0);
-    setDuration(media.type === "video" ? media.durationSeconds : 0);
+    setDuration(media.type === "video" ? (media.durationSeconds ?? 0) : 0);
+    setLinkImgError(false);
   }, [media]);
 
   // Auto-pause video when pin mode is activated so user can pin a steady frame
@@ -246,6 +330,83 @@ export function ModalMediaStage({
         </p>
       </div>
     );
+  }
+
+  if (media.type === "link") {
+    if (media.embedType === "youtube" && media.youtubeId) {
+      return (
+        <div>
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[22px] bg-muted-surface">
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${media.youtubeId}`}
+              title={media.previewTitle || "YouTube video"}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="h-full w-full border-0"
+            />
+          </div>
+          <div className="mt-2.5 flex items-center justify-between gap-2 text-[13px]">
+            <span className="truncate font-medium text-ink-secondary">
+              {media.previewTitle || "YouTube video"}
+            </span>
+            <a
+              href={media.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center gap-1 font-bold text-cobalt hover:underline"
+            >
+              Watch on YouTube
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </div>
+      );
+    }
+
+    if (!media.thumbnailUrl || linkImgError) {
+      return (
+        <div>
+          <div className="rounded-[22px] border-2 border-line bg-canvas p-6">
+            <div className="flex items-center justify-between gap-2 text-[13px] font-bold text-ink-muted">
+              <span className="inline-flex items-center gap-1.5 truncate">
+                <Globe className="h-4 w-4 shrink-0 text-cobalt" />
+                {media.host}
+              </span>
+              {media.tweetAuthor && <span>{media.tweetAuthor}</span>}
+            </div>
+
+            {media.tweetText ? (
+              <p className="mt-3 text-[17px] leading-[1.45] font-bold text-ink">
+                {media.tweetText}
+              </p>
+            ) : (
+              <>
+                {media.previewTitle && (
+                  <h4 className="mt-3 text-[18px] leading-snug font-extrabold text-ink">
+                    {media.previewTitle}
+                  </h4>
+                )}
+                {media.previewDescription && (
+                  <p className="mt-2 text-[14.5px] leading-relaxed text-ink-secondary">
+                    {media.previewDescription}
+                  </p>
+                )}
+              </>
+            )}
+
+            <a
+              href={media.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-bold text-cobalt hover:underline"
+            >
+              Open on {media.host}
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </div>
+      );
+    }
   }
 
   const effectiveGifFrozen = media.type === "gif" && (gifFrozen || pinMode);
@@ -299,6 +460,15 @@ export function ModalMediaStage({
           />
         )}
 
+        {media.type === "link" && media.thumbnailUrl && (
+          <img
+            src={media.thumbnailUrl}
+            alt={media.previewTitle || media.host}
+            onError={() => setLinkImgError(true)}
+            className="h-full w-full object-cover"
+          />
+        )}
+
         {media.type === "gif" && (
           <>
             <img
@@ -317,7 +487,7 @@ export function ModalMediaStage({
             <video
               ref={videoRef}
               src={media.url}
-              poster={media.posterUrl}
+              poster={media.posterUrl || undefined}
               aria-label={media.alt}
               autoPlay
               muted={videoMuted}
@@ -326,8 +496,9 @@ export function ModalMediaStage({
               onPlay={() => setVideoPlaying(true)}
               onPause={() => setVideoPlaying(false)}
               onLoadedMetadata={(e) => {
-                if (e.currentTarget.duration) {
-                  setDuration(e.currentTarget.duration);
+                const dur = e.currentTarget.duration;
+                if (Number.isFinite(dur) && dur > 0) {
+                  setDuration(dur);
                 }
               }}
               onTimeUpdate={(e) => {
@@ -384,7 +555,9 @@ export function ModalMediaStage({
               </div>
 
               <span className="shrink-0 text-[12px] font-bold tabular-nums opacity-90">
-                {formatDuration(currentTime)} / {formatDuration(duration)}
+                {duration > 0
+                  ? `${formatDuration(currentTime)} / ${formatDuration(duration)}`
+                  : formatDuration(currentTime)}
               </span>
 
               {media.hasAudio && (
@@ -440,10 +613,27 @@ export function ModalMediaStage({
         )}
       </div>
 
-      {media.caption && (
+      {media.type !== "link" && media.caption && (
         <p className="mt-2 text-[13px] font-medium text-ink-muted">
           {media.caption}
         </p>
+      )}
+
+      {media.type === "link" && (
+        <div className="mt-2 flex items-center justify-between gap-2 text-[13px]">
+          <span className="truncate font-semibold text-ink-secondary">
+            {media.previewTitle || media.host}
+          </span>
+          <a
+            href={media.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex shrink-0 items-center gap-1 font-bold text-cobalt hover:underline"
+          >
+            Open on {media.host}
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
       )}
 
       <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[13px]">
