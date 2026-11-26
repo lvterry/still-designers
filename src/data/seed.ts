@@ -13,7 +13,6 @@ export const DEMO_USERS: Record<string, Author> = {
     id: "user-maya",
     name: "Maya Lin",
     handle: "@mayalin",
-    roleTitle: "Product designer",
     tone: "pink",
     initials: "ML",
   },
@@ -21,7 +20,6 @@ export const DEMO_USERS: Record<string, Author> = {
     id: "user-terry",
     name: "Terry Wang",
     handle: "@terry",
-    roleTitle: "Community admin",
     tone: "cobalt",
     initials: "TW",
   },
@@ -29,7 +27,6 @@ export const DEMO_USERS: Record<string, Author> = {
     id: "user-newcomer",
     name: "Sam Rivera",
     handle: "@samr",
-    roleTitle: "Interaction designer",
     tone: "emerald",
     initials: "SR",
   },
@@ -47,43 +44,27 @@ export const INITIAL_PINNED_PROMPT: PinnedPrompt = {
 export const INITIAL_POSTS: DiscoveryPost[] = [
   {
     id: "post-1",
-    title: "Bookmarks as living moodboards instead of dusty folders",
-    kind: "website",
+    title: "Bookmarks as living moodboards",
+    kind: "image",
     tone: "coral",
     media: {
       type: "image",
       url: "/mock-media/living-bookmarks.png",
       alt: "Overhead studio photo of color swatches, rounded paper bookmarks, and handwritten notes",
-      caption: "Tactile moodboard study pairing dominant color swatches with personal notes.",
     },
     restTilt: -2.2,
     hoverTilt: 1.6,
     authorId: "user-maya",
     authorName: "Maya Lin",
     authorHandle: "@mayalin",
-    authorRole: "Product designer",
     authorTone: "pink",
     createdAt: "2026-11-25T08:10:00Z",
     lastActivityAt: "2026-11-25T09:50:00Z",
-    originalCreator: "Maya Lin (original study)",
-    sourceName: "stilldesigners.com/play/living-bookmarks",
-    sourceUrl: "https://stilldesigners.com",
-    attributionNote:
-      "Original 20-minute study shared by Maya Lin for the weekly prompt.",
-    excerpts: [
-      {
-        id: "ex-1a",
-        text: "When an AI can already search any URL I forgot, a bookmark no longer needs to be a filing cabinet—it can be a warm shelf of visual sparks.",
-      },
-      {
-        id: "ex-1b",
-        text: "Each saved link pulls one dominant color swatch and a two-line personal reason why I cared, fading gently if I never revisit it.",
-      },
-    ],
+    originalCreator: "Maya Lin",
+    sourceName: "",
+    sourceUrl: "",
     personalTake:
-      "I sketched this in 20 minutes for the prompt! Instead of nested folders, what if saving a page asked you for a single playful sticker note so future-you remembers the feeling, not just the headline?",
-    discussionPrompt:
-      "If your browser only let you keep 12 bookmarks on a single corkboard, what metadata would actually matter?",
+      "I sketched this in 20 minutes for the prompt! Instead of nested folders, what if saving a page pulled one dominant color swatch and a tiny sticker note so future-you remembers the feeling, not just the headline?",
     visualPins: [
       {
         id: "pin-1a",
@@ -91,24 +72,8 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
         y: 38,
         label: "Tilted color swatch stack",
       },
-      {
-        id: "pin-1b",
-        x: 71,
-        y: 62,
-        label: "Fading timestamp corner",
-      },
     ],
     promptId: "prompt-bookmark-ai",
-    perspectives: [
-      {
-        id: "persp-1a",
-        authorId: "user-nora",
-        authorName: "Nora Klein",
-        authorTone: "sky",
-        text: "Love the gentle fading idea! My bookmark bar is basically a museum of projects from 2022—decaying gracefully feels kinder than manual cleanup.",
-        createdAt: "2026-11-25T08:55:00Z",
-      },
-    ],
     reactions: {
       thumbsUp: ["user-nora", "user-leo", "user-terry", "user-hana"],
       heart: ["user-maya", "user-nora", "user-priya", "user-leo", "user-tomas"],
@@ -117,7 +82,7 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-3",
-    title: "Treating AI glitches like risograph misprints",
+    title: "",
     kind: "article",
     tone: "sun",
     media: {
@@ -125,47 +90,22 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       quoteText:
         "Treating AI glitches like risograph misprints turns frustration into a sketchbook—half my favorite lettering curves started as a happy accident.",
       quoteAuthor: "Priya Nair",
-      quoteSource: "Happy Accidents · Field Notes",
+      quoteSource: "priyanair.design",
     },
     restTilt: -1.4,
     hoverTilt: 2.1,
     authorId: "user-priya",
     authorName: "Priya Nair",
     authorHandle: "@priyanair",
-    authorRole: "Brand & type designer",
     authorTone: "coral",
     createdAt: "2026-11-25T06:20:00Z",
     lastActivityAt: "2026-11-25T09:42:00Z",
-    originalCreator: "Priya Nair (personal field notes)",
-    sourceName: "priyanair.design/happy-accidents",
-    sourceUrl: "https://example.com/happy-accidents",
-    attributionNote:
-      "Short excerpts shared with credit—visit the original essay for the full notes.",
-    excerpts: [
-      {
-        id: "ex-3a",
-        text: "When I asked an image model for 'warm grocery store signage', it invented a ligature between R and O that no real font has—and it actually solved a logo lockup I was stuck on.",
-      },
-      {
-        id: "ex-3b",
-        text: "Treating model glitches like risograph misprints turns frustration into a sketchbook.",
-      },
-    ],
+    originalCreator: "Priya Nair",
+    sourceName: "priyanair.design",
+    sourceUrl: "https://priyanair.design/happy-accidents",
     personalTake:
       "We always post polished AI outputs, never the funny broken ones. Half my best recent lettering ideas started from a model hallucinating impossible curves and me redrawing them cleanly in vector.",
-    discussionPrompt:
-      "Have you ever kept an accidental AI glitch and turned it into a real design detail?",
     visualPins: [],
-    perspectives: [
-      {
-        id: "persp-3a",
-        authorId: "user-tomas",
-        authorName: "Tomas Vega",
-        authorTone: "emerald",
-        text: "Comparing AI glitches to risograph misprints completely reframes how I use image models during early moodboarding.",
-        createdAt: "2026-11-25T08:12:00Z",
-      },
-    ],
     reactions: {
       thumbsUp: ["user-maya", "user-leo", "user-nora", "user-tomas", "user-terry"],
       heart: ["user-maya", "user-hana", "user-nora"],
@@ -174,44 +114,28 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-2",
-    title: "Hand-painted UI cursors that wave hello when you idle",
-    kind: "website",
+    title: "Hand-painted cursors that wave when you idle",
+    kind: "image",
     tone: "cobalt",
     media: {
       type: "gif",
       url: "/mock-media/cursor-wave.gif",
       posterUrl: "/mock-media/cursor-wave-poster.png",
       alt: "Animated UI cursor gliding into view and waving hello during an idle pause",
-      caption: "3.2s idle-wave loop captured from Studio Paperkite's cursor garden.",
     },
     restTilt: 1.7,
     hoverTilt: -1.4,
     authorId: "user-leo",
     authorName: "Leo Okafor",
     authorHandle: "@leookafor",
-    authorRole: "Creative technologist",
     authorTone: "sky",
     createdAt: "2026-11-25T07:30:00Z",
     lastActivityAt: "2026-11-25T09:30:00Z",
     originalCreator: "Studio Paperkite",
-    sourceName: "paperkite.studio/cursor-garden",
-    sourceUrl: "https://example.com/cursor-garden",
-    attributionNote:
-      "External discovery shared for inspiration and discussion—credit belongs to Studio Paperkite.",
-    excerpts: [
-      {
-        id: "ex-2a",
-        text: "Most AI interfaces feel like sterile terminals. Adding a tiny two-frame wiggle when the pointer rests reminds you a human crafted this room.",
-      },
-      {
-        id: "ex-2b",
-        text: "Delight works best when it stays out of the way during focused tasks and only peeks out in the pauses between clicks.",
-      },
-    ],
+    sourceName: "paperkite.studio",
+    sourceUrl: "https://paperkite.studio/cursor-garden",
     personalTake:
       "Found this tiny portfolio experiment last night and couldn't stop smiling. While AI tools generate clean screens in seconds, tiny weird micro-behaviors like a sleepy cursor still feel unmistakably human.",
-    discussionPrompt:
-      "Where is the line between charming micro-play and distracting novelty?",
     visualPins: [
       {
         id: "pin-2a",
@@ -220,7 +144,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
         label: "Waving pointer character",
       },
     ],
-    perspectives: [],
     reactions: {
       thumbsUp: ["user-maya", "user-priya", "user-terry"],
       heart: ["user-hana", "user-tomas", "user-maya"],
@@ -229,7 +152,7 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-4",
-    title: "Tactile synthesizer knobs translated into web sliders",
+    title: "Tactile synth knobs as web sliders",
     kind: "video",
     tone: "emerald",
     media: {
@@ -239,51 +162,21 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       alt: "Short UI video of coral and cobalt rotary dials snapping between magnetic detents",
       durationSeconds: 7,
       hasAudio: true,
-      caption: "Captured with soft magnetic detent click audio.",
     },
     restTilt: 2.3,
     hoverTilt: -1.5,
     authorId: "user-tomas",
     authorName: "Tomas Vega",
     authorHandle: "@tomasv",
-    authorRole: "Design engineer",
     authorTone: "emerald",
     createdAt: "2026-11-24T22:15:00Z",
     lastActivityAt: "2026-11-25T09:15:00Z",
-    originalCreator: "Teenage Engineering & community breakdown by K. Sato",
-    sourceName: "vimeo.com/tactile-web-knobs",
-    sourceUrl: "https://example.com/tactile-knobs",
-    attributionNote:
-      "External video reference shared for inspiration and discussion—credit belongs to the original creator.",
-    excerpts: [
-      {
-        id: "ex-4a",
-        text: "A physical detent tells your fingers where the default value lives without making your eyes read a single number.",
-      },
-      {
-        id: "ex-4b",
-        text: "Pairing a subtle spring snap with a 40ms click sound makes temperature and creativity sliders feel playful instead of technical.",
-      },
-    ],
+    originalCreator: "Teenage Engineering",
+    sourceName: "vimeo.com",
+    sourceUrl: "https://vimeo.com/tactile-web-knobs",
     personalTake:
       "Every AI app gives users a dry 'temperature: 0.7' text box. Imagine tuning an AI assistant's playfulness with chunky plastic knobs that click softly into place.",
-    discussionPrompt:
-      "What boring AI parameter deserves a toy-like physical control?",
-    visualPins: [
-      {
-        id: "pin-4a",
-        x: 32,
-        y: 48,
-        label: "Chunky coral dial detent",
-      },
-      {
-        id: "pin-4b",
-        x: 68,
-        y: 46,
-        label: "Notched magnetic scale",
-      },
-    ],
-    perspectives: [],
+    visualPins: [],
     reactions: {
       thumbsUp: ["user-maya", "user-priya", "user-hana"],
       heart: ["user-leo", "user-terry", "user-nora", "user-maya"],
@@ -292,8 +185,8 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-12",
-    title: "Mood-tray bookmarks that shake to shuffle your sparks",
-    kind: "website",
+    title: "Mood-tray bookmarks that shake to shuffle",
+    kind: "video",
     tone: "sky",
     media: {
       type: "video",
@@ -302,32 +195,20 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       alt: "Prototype recording of Playful, Calm, and Weird trays shaking to shuffle bookmark cards",
       durationSeconds: 8,
       hasAudio: false,
-      caption: "25-minute coded prototype showing shake-to-shuffle trays.",
     },
     restTilt: 1.6,
     hoverTilt: -1.9,
     authorId: "user-tomas",
     authorName: "Tomas Vega",
     authorHandle: "@tomasv",
-    authorRole: "Design engineer",
     authorTone: "emerald",
     createdAt: "2026-11-25T09:05:00Z",
     lastActivityAt: "2026-11-25T08:50:00Z",
-    originalCreator: "Tomas Vega (weekly prompt sketch)",
-    sourceName: "stilldesigners.com/play/mood-shelf",
-    sourceUrl: "https://stilldesigners.com",
-    attributionNote:
-      "Original 25-minute sketch shared by Tomas Vega for the weekly prompt.",
-    excerpts: [
-      {
-        id: "ex-12a",
-        text: "Instead of folders or search bars, an on-device classifier sorts saved links into three studio trays—'playful', 'calm', and 'weird'—that you can shake to rediscover old sparks.",
-      },
-    ],
+    originalCreator: "Tomas Vega",
+    sourceName: "",
+    sourceUrl: "",
     personalTake:
       "My take on this week's bookmark prompt! I realized I only revisit saved links when I'm looking for a specific mood, so I sketched three chunky trays you can rattle like a toy box.",
-    discussionPrompt:
-      "Would you trust a tiny local classifier to sort your sparks, or is sorting half the joy?",
     visualPins: [
       {
         id: "pin-12a",
@@ -337,7 +218,6 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       },
     ],
     promptId: "prompt-bookmark-ai",
-    perspectives: [],
     reactions: {
       thumbsUp: ["user-maya", "user-terry", "user-priya"],
       heart: ["user-maya", "user-nora", "user-hana"],
@@ -346,52 +226,28 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-7",
-    title: "Risograph zine spreads with expressive hand-stamped eyes",
+    title: "",
     kind: "image",
     tone: "pink",
     media: {
       type: "image",
       url: "/mock-media/riso-eyes-zine.png",
       alt: "Macro studio photo of an open cobalt and coral risograph zine with playful eye stamps",
-      caption: "Cobalt & coral soy-ink risograph test spread from Honeysticks.",
     },
     restTilt: -2.1,
     hoverTilt: 1.4,
     authorId: "user-terry",
     authorName: "Terry Wang",
     authorHandle: "@terry",
-    authorRole: "Community admin",
     authorTone: "cobalt",
     createdAt: "2026-11-24T14:00:00Z",
     lastActivityAt: "2026-11-25T08:30:00Z",
-    originalCreator: "Honeysticks brand illustration team",
+    originalCreator: "Honeysticks",
     sourceName: "honeysticks.com",
-    sourceUrl: "https://example.com/honeysticks-eyes",
-    attributionNote:
-      "External brand reference shared for inspiration—credit belongs to the original illustrators.",
-    excerpts: [
-      {
-        id: "ex-7a",
-        text: "Two simple dots in white ovals instantly turn any abstract blob into a character you root for—happy, sleepy, surprised, or curious.",
-      },
-      {
-        id: "ex-7b",
-        text: "Instead of writing 'Loading…' in grey text, two curious eyes glancing left and right make waiting feel gentle.",
-      },
-    ],
+    sourceUrl: "https://honeysticks.com",
     personalTake:
       "I keep coming back to picture-book illustration for inspiration when designing AI companions. You don't need photorealistic avatars—two expressive eyes carry way more soul.",
-    discussionPrompt:
-      "What non-digital object or kids' book taught you something about UI design?",
-    visualPins: [
-      {
-        id: "pin-7a",
-        x: 38,
-        y: 40,
-        label: "Curious side-glance pupils",
-      },
-    ],
-    perspectives: [],
+    visualPins: [],
     reactions: {
       thumbsUp: ["user-maya", "user-nora", "user-priya", "user-hana"],
       heart: ["user-maya", "user-leo", "user-tomas", "user-priya"],
@@ -400,7 +256,7 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-10",
-    title: "Bento grids that breathe instead of locking into rigid boxes",
+    title: "",
     kind: "article",
     tone: "emerald",
     media: {
@@ -408,36 +264,21 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       quoteText:
         "A 2-degree tilt breaks the spreadsheet trance immediately. Suddenly a grid feels like postcards spread across a studio table.",
       quoteAuthor: "Linnea Berg",
-      quoteSource: "Loose Grids",
     },
     restTilt: 1.9,
     hoverTilt: -1.7,
     authorId: "user-nora",
     authorName: "Nora Klein",
     authorHandle: "@noraklein",
-    authorRole: "Visual designer",
     authorTone: "sky",
     createdAt: "2026-11-23T17:45:00Z",
     lastActivityAt: "2026-11-25T08:10:00Z",
     originalCreator: "Linnea Berg",
-    sourceName: "linneaberg.se/loose-grids",
-    sourceUrl: "https://example.com/loose-grids",
-    attributionNote:
-      "External essay excerpted with credit—read the full piece on Linnea Berg's blog.",
-    excerpts: [
-      {
-        id: "ex-10a",
-        text: "A 2-degree tilt breaks the spreadsheet trance immediately. Suddenly a grid feels like postcards spread across a studio table.",
-      },
-      {
-        id: "ex-10b",
-        text: "Keep the underlying rhythm predictable so scanning stays effortless, and let small human imperfections carry the personality.",
-      },
-    ],
+    sourceName: "",
+    sourceUrl: "",
     personalTake:
-      "This essay explained why I've been bored of symmetrical bento dashboards lately. Even a tiny angle offset makes every item feel placed by hand.",
+      "This line explained why I've been bored of symmetrical bento dashboards lately. Even a tiny angle offset makes every item feel placed by hand.",
     visualPins: [],
-    perspectives: [],
     reactions: {
       thumbsUp: ["user-maya", "user-terry", "user-hana"],
       heart: ["user-priya", "user-maya"],
@@ -446,47 +287,29 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-6",
-    title: "Spatial typography posters that lean toward your cursor",
-    kind: "designer",
+    title: "Spatial typography that leans toward your cursor",
+    kind: "image",
     tone: "coral",
     media: {
       type: "gif",
       url: "/mock-media/spatial-type.gif",
       posterUrl: "/mock-media/spatial-type-poster.png",
       alt: "Animated Swiss typography poster whose letterforms lean and soften toward a drifting pointer",
-      caption: "Variable roundness & slant axes responding to pointer proximity.",
     },
     restTilt: 1.5,
     hoverTilt: -2.0,
     authorId: "user-nora",
     authorName: "Nora Klein",
     authorHandle: "@noraklein",
-    authorRole: "Visual designer",
     authorTone: "sky",
     createdAt: "2026-11-24T16:10:00Z",
     lastActivityAt: "2026-11-25T07:50:00Z",
     originalCreator: "Jules Mercier",
     sourceName: "julesmercier.ch",
-    sourceUrl: "https://example.com/jules-mercier",
-    attributionNote:
-      "Designer portfolio shared for inspiration—credit belongs to Jules Mercier.",
-    excerpts: [
-      {
-        id: "ex-6a",
-        text: "Variable font axes like roundness and weight become living choreography when tied gently to pointer distance.",
-      },
-    ],
+    sourceUrl: "https://julesmercier.ch",
     personalTake:
       "Jules makes variable fonts feel like squishy balloons! It reminded me how much warmth pure typography can carry before you even add illustrations.",
-    visualPins: [
-      {
-        id: "pin-6a",
-        x: 50,
-        y: 45,
-        label: "Variable roundness shift",
-      },
-    ],
-    perspectives: [],
+    visualPins: [],
     reactions: {
       thumbsUp: ["user-priya", "user-maya"],
       heart: ["user-leo", "user-hana"],
@@ -495,46 +318,32 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-5",
-    title: "How I turn napkin doodles into clickable prototypes in 15 minutes",
+    title: "",
     kind: "article",
     tone: "cobalt",
     media: {
-      type: "quote",
-      quoteText:
-        "Three sharpie boxes on index cards keep me focused on rhythm before pixels hijack my brain. Once the flow feels alive in code, I come back for craft.",
-      quoteAuthor: "Hana Sato",
-      quoteSource: "Napkin to Browser",
+      type: "link",
+      url: "https://x.com/hanasato/status/1860421983104291840",
+      host: "x.com",
+      embedType: "tweet",
+      tweetText:
+        "I stopped opening Figma first for rough flows. Three sharpie boxes on index cards keep me focused on rhythm before pixels hijack my brain—then straight to code.",
+      tweetAuthor: "@hanasato",
     },
     restTilt: -1.9,
     hoverTilt: 1.8,
     authorId: "user-hana",
     authorName: "Hana Sato",
     authorHandle: "@hanasato",
-    authorRole: "UX designer",
     authorTone: "pink",
     createdAt: "2026-11-24T19:40:00Z",
     lastActivityAt: "2026-11-24T22:10:00Z",
     originalCreator: "Hana Sato",
-    sourceName: "hanasato.notes/napkin-to-browser",
-    sourceUrl: "https://example.com/napkin-to-browser",
-    attributionNote:
-      "Workflow notes excerpted with credit to Hana Sato.",
-    excerpts: [
-      {
-        id: "ex-5a",
-        text: "I stopped opening Figma first for rough flows. Three sharpie boxes on index cards keep me focused on rhythm before pixels hijack my brain.",
-      },
-      {
-        id: "ex-5b",
-        text: "Once the card flow feels alive in a quick coded prototype, I bring the winning layout back to refine spacing and craft.",
-      },
-    ],
+    sourceName: "x.com",
+    sourceUrl: "https://x.com/hanasato/status/1860421983104291840",
     personalTake:
       "Coding prototypes directly from paper sketches made design fun again for me—especially testing motion like hover tilts and dialog springs that static frames never capture.",
-    discussionPrompt:
-      "Are you still starting in canvas tools, or jumping straight from paper to code?",
     visualPins: [],
-    perspectives: [],
     reactions: {
       thumbsUp: ["user-maya", "user-terry", "user-leo"],
       heart: ["user-priya", "user-tomas", "user-nora"],
@@ -543,7 +352,7 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-9",
-    title: "Sound effects that make form submission feel like dropping a marble",
+    title: "Form submission sound like dropping a marble",
     kind: "video",
     tone: "sun",
     media: {
@@ -553,32 +362,21 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
       alt: "Short UI video of a glossy cobalt marble dropping along a track and chiming three pegs",
       durationSeconds: 6,
       hasAudio: true,
-      caption: "Includes soft acoustic marimba taps synced to each peg hit.",
     },
     restTilt: -1.6,
     hoverTilt: 2.0,
     authorId: "user-leo",
     authorName: "Leo Okafor",
     authorHandle: "@leookafor",
-    authorRole: "Creative technologist",
     authorTone: "sky",
     createdAt: "2026-11-23T21:00:00Z",
     lastActivityAt: "2026-11-24T20:10:00Z",
     originalCreator: "Mina Cho",
-    sourceName: "minacho.sound/marble-ui",
-    sourceUrl: "https://example.com/marble-ui",
-    attributionNote:
-      "External sound design study shared for discussion—credit belongs to Mina Cho.",
-    excerpts: [
-      {
-        id: "ex-9a",
-        text: "Wooden marimba taps and muted ceramic clicks work better than synthetic beeps because our ears never tire of acoustic textures.",
-      },
-    ],
+    sourceName: "minacho.sound",
+    sourceUrl: "https://minacho.sound/marble-ui",
     personalTake:
       "I used to mute every web app automatically, until I tried Mina's demo with soft wood-block clicks on card flips. Subtle opt-in sound could make creative tools feel magical.",
     visualPins: [],
-    perspectives: [],
     reactions: {
       thumbsUp: ["user-priya", "user-tomas", "user-maya"],
       heart: ["user-maya", "user-terry"],
@@ -587,39 +385,33 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-11",
-    title: "Warm paper grain shaders that take the glare off screens",
+    title: "Warm paper grain shaders for calmer screens",
     kind: "website",
     tone: "sky",
     media: {
-      type: "image",
-      url: "/mock-media/paper-grain-swatches.png",
-      alt: "Minimalist flat-lay of warm off-white cotton paper sheets and textured cardstock swatches",
-      caption: "Reference paper stocks sampled for 2% warm cream background grain.",
+      type: "link",
+      url: "https://rohandas.art/paper-grain",
+      host: "rohandas.art",
+      embedType: "webpage",
+      thumbnailUrl: "/mock-media/paper-grain-swatches.png",
+      previewTitle: "Warm paper grain shaders for calmer screens",
+      previewDescription:
+        "Swapping stark white for warm cream with 2% paper noise cuts visual fatigue and makes saturated colors look printed instead of neon.",
     },
     restTilt: -2.0,
     hoverTilt: 1.5,
     authorId: "user-priya",
     authorName: "Priya Nair",
     authorHandle: "@priyanair",
-    authorRole: "Brand & type designer",
     authorTone: "coral",
     createdAt: "2026-11-23T13:20:00Z",
     lastActivityAt: "2026-11-24T18:30:00Z",
     originalCreator: "Rohan Das",
-    sourceName: "rohandas.art/paper-grain",
-    sourceUrl: "https://example.com/paper-grain",
-    attributionNote:
-      "SVG grain recipe shared with credit to Rohan Das.",
-    excerpts: [
-      {
-        id: "ex-11a",
-        text: "Swapping stark white for warm cream with a 2% paper noise cuts visual fatigue and makes saturated colors look printed instead of neon.",
-      },
-    ],
+    sourceName: "rohandas.art",
+    sourceUrl: "https://rohandas.art/paper-grain",
     personalTake:
       "Tried this warm cream tint on a side project yesterday and immediately noticed how much calmer bright cobalt and coral look on paper-toned backgrounds.",
     visualPins: [],
-    perspectives: [],
     reactions: {
       thumbsUp: ["user-nora", "user-tomas"],
       heart: ["user-maya", "user-hana"],
@@ -628,40 +420,29 @@ export const INITIAL_POSTS: DiscoveryPost[] = [
   },
   {
     id: "post-8",
-    title: "Tiny clay-like icons built from 3 basic CSS shadows",
-    kind: "website",
+    title: "Clay-like icons built from 3 CSS shadows",
+    kind: "image",
     tone: "pink",
     media: {
       type: "gif",
       url: "/mock-media/clay-buttons.gif",
       posterUrl: "/mock-media/clay-buttons-poster.png",
       alt: "Animated loop of chunky cobalt, coral, and emerald clay buttons compressing into their bottom lips",
-      caption: "Looping hover/active compression test in pure CSS.",
     },
     restTilt: 2.0,
     hoverTilt: -1.6,
     authorId: "user-maya",
     authorName: "Maya Lin",
     authorHandle: "@mayalin",
-    authorRole: "Product designer",
     authorTone: "pink",
     createdAt: "2026-11-24T11:30:00Z",
     lastActivityAt: "2026-11-24T16:00:00Z",
     originalCreator: "Devon Park",
-    sourceName: "devonpark.dev/clay-css",
-    sourceUrl: "https://example.com/clay-css",
-    attributionNote:
-      "CSS experiment linked with credit to Devon Park.",
-    excerpts: [
-      {
-        id: "ex-8a",
-        text: "A chunky solid bottom lip plus one soft inner highlight gives flat vector shapes a playful toy-block feel without heavy 3D assets.",
-      },
-    ],
+    sourceName: "devonpark.dev",
+    sourceUrl: "https://devonpark.dev/clay-css",
     personalTake:
       "Everything in enterprise SaaS has been 1px hairline grey for five years. Seeing chunky toy buttons come back with pure CSS makes me want to poke every button on the screen.",
     visualPins: [],
-    perspectives: [],
     reactions: {
       thumbsUp: ["user-tomas", "user-terry"],
       heart: ["user-hana", "user-nora", "user-leo"],
@@ -707,11 +488,8 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     authorId: "user-priya",
     authorName: "Priya Nair",
     authorTone: "coral",
-    text: "This line hit home. AI made retrieval free, so the human value of bookmarking shifts from 'finding' to 'remembering why it moved me'.",
+    text: "Love this framing—AI made retrieval free, so the human value of bookmarking shifts from 'finding' to 'remembering why it moved me'.",
     createdAt: "2026-11-25T09:10:00Z",
-    anchorType: "excerpt",
-    anchorId: "ex-1a",
-    anchorLabel: "Excerpt #1 · 'a bookmark no longer needs to be a filing cabinet'",
     reactions: {
       thumbsUp: ["user-maya", "user-terry"],
       heart: ["user-maya", "user-nora"],
@@ -725,9 +503,9 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     authorTone: "pink",
     text: "Only waking up during idle moments is the secret sauce. Never fight the user when they're trying to click a button!",
     createdAt: "2026-11-25T08:15:00Z",
-    anchorType: "excerpt",
-    anchorId: "ex-2b",
-    anchorLabel: "Excerpt #2 · 'only peeks out in the pauses between clicks'",
+    anchorType: "visual",
+    anchorId: "pin-2a",
+    anchorLabel: "Visual pin #1 · Waving pointer character",
     reactions: {
       thumbsUp: ["user-leo", "user-maya"],
       heart: ["user-leo"],
@@ -741,9 +519,9 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     authorTone: "sky",
     text: "Yes! An image model once rendered a weird rounded 'g' with a smiley ear for a coffee poster and I ended up drawing a whole display wordmark from it.",
     createdAt: "2026-11-25T07:55:00Z",
-    anchorType: "excerpt",
-    anchorId: "ex-3a",
-    anchorLabel: "Excerpt #1 · 'invented a ligature between R and O'",
+    anchorType: "quote",
+    anchorId: "main-quote",
+    anchorLabel: "Main quote · 'Treating AI glitches like risograph misprints...'",
     reactions: {
       thumbsUp: ["user-priya", "user-maya"],
       heart: ["user-priya"],
@@ -763,6 +541,32 @@ export const INITIAL_COMMENTS: CommentItem[] = [
     reactions: {
       thumbsUp: ["user-tomas"],
       heart: ["user-tomas", "user-terry"],
+    },
+  },
+  {
+    id: "cmt-7",
+    postId: "post-1",
+    authorId: "user-nora",
+    authorName: "Nora Klein",
+    authorTone: "sky",
+    text: "Love the gentle fading idea! My bookmark bar is basically a museum of projects from 2022—decaying gracefully feels kinder than manual cleanup.",
+    createdAt: "2026-11-25T08:55:00Z",
+    reactions: {
+      thumbsUp: [],
+      heart: [],
+    },
+  },
+  {
+    id: "cmt-8",
+    postId: "post-3",
+    authorId: "user-tomas",
+    authorName: "Tomas Vega",
+    authorTone: "emerald",
+    text: "Comparing AI glitches to risograph misprints completely reframes how I use image models during early moodboarding.",
+    createdAt: "2026-11-25T08:12:00Z",
+    reactions: {
+      thumbsUp: [],
+      heart: [],
     },
   },
 ];
@@ -785,11 +589,11 @@ export const INITIAL_SAVES: SavedEntry[] = [
 export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
     id: "notif-1",
-    type: "perspective",
+    type: "reply",
     actorName: "Nora Klein",
     postId: "post-1",
-    postTitle: "Bookmarks as living moodboards instead of dusty folders",
-    snippet: "Added a perspective on your living moodboards sketch",
+    postTitle: "Bookmarks as living moodboards",
+    snippet: "Commented on your living moodboards sketch",
     createdAt: "2026-11-25T08:55:00Z",
     read: false,
   },
@@ -798,8 +602,8 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     type: "reply",
     actorName: "Priya Nair",
     postId: "post-1",
-    postTitle: "Bookmarks as living moodboards instead of dusty folders",
-    snippet: "Anchored a note on your excerpt about bookmarking as memory",
+    postTitle: "Bookmarks as living moodboards",
+    snippet: "Commented on bookmarking as memory rather than filing",
     createdAt: "2026-11-25T09:10:00Z",
     read: false,
   },

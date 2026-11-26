@@ -128,7 +128,7 @@ export function Header({
 
         {/* Right: Clean uncluttered controls (Notifications, Share, Avatar menu / Sign in) */}
         <div className="flex items-center justify-end gap-2.5 sm:gap-3">
-          {/* Notifications (replies & perspectives only — never reactions) */}
+          {/* Notifications (replies only — never reactions) */}
           <div className="relative" ref={notifRef}>
             <button
               type="button"
@@ -178,7 +178,7 @@ export function Header({
                             {item.actorName}
                           </span>
                           <span className="text-[12px] font-semibold text-cobalt">
-                            {item.type === "perspective" ? "Perspective" : "Reply"}
+                            Reply
                           </span>
                         </div>
                         <p className="text-[13px] leading-snug text-ink-secondary">

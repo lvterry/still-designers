@@ -25,7 +25,7 @@ import type {
   SavedEntry,
 } from "@/types/community";
 
-const STORAGE_KEY = "still-designers-proto-v3";
+const STORAGE_KEY = "still-designers-proto-v4";
 
 interface PersistedState {
   role: Role;
@@ -45,9 +45,7 @@ export interface CreatePostInput {
   originalCreator: string;
   sourceName: string;
   sourceUrl: string;
-  excerptText: string;
   personalTake: string;
-  discussionPrompt?: string;
   promptId?: string;
 }
 
@@ -70,27 +68,18 @@ interface CommunityContextValue {
 
   // Role & onboarding
   setRole: (role: Role) => void;
-  completeOnboarding: (input: {
-    name: string;
-    kind: DiscoveryKind;
-    title: string;
-    sourceUrl: string;
-    originalCreator: string;
-    personalTake: string;
-    tone: CardTone;
-  }) => DiscoveryPost;
+  completeOnboarding: (input: CreatePostInput & { name: string }) => DiscoveryPost;
   resetPrototype: () => void;
 
   // Posts & interactions
   createPost: (input: CreatePostInput) => DiscoveryPost;
-  updatePost: (postId: string, patch: { title: string; personalTake: string; discussionPrompt?: string }) => void;
+  updatePost: (postId: string, patch: { title: string; personalTake: string }) => void;
   deletePost: (postId: string) => void;
   adminRemovePost: (postId: string) => void;
   reportPost: (postId: string, reason: string) => void;
   togglePostReaction: (postId: string, kind: "thumbsUp" | "heart") => void;
   toggleSavePost: (postId: string) => void;
   isPostSaved: (postId: string) => boolean;
-  addPerspective: (postId: string, text: string) => void;
   addVisualPin: (postId: string, x: number, y: number, label: string, commentText: string) => void;
 
   // Comments
@@ -98,7 +87,7 @@ interface CommunityContextValue {
     postId: string;
     text: string;
     parentId?: string;
-    anchorType?: "visual" | "excerpt";
+    anchorType?: "visual" | "quote";
     anchorId?: string;
     anchorLabel?: string;
   }) => void;
@@ -121,51 +110,6 @@ const TILT_PAIRS: [number, number][] = [
   [-1.9, 1.5],
   [1.4, -2.1],
 ];
-
-function defaultMediaForKind(
-  kind: DiscoveryKind,
-  title: string,
-  personalTake: string,
-  originalCreator: string
-): DiscoveryMedia {
-  switch (kind) {
-    case "article":
-      return {
-        type: "quote",
-        quoteText: personalTake,
-        quoteAuthor: originalCreator,
-      };
-    case "video":
-      return {
-        type: "video",
-        url: "/mock-media/tactile-knobs.mp4",
-        posterUrl: "/mock-media/tactile-knobs-poster.png",
-        alt: title,
-        durationSeconds: 7,
-        hasAudio: true,
-      };
-    case "designer":
-      return {
-        type: "gif",
-        url: "/mock-media/spatial-type.gif",
-        posterUrl: "/mock-media/spatial-type-poster.png",
-        alt: title,
-      };
-    case "image":
-      return {
-        type: "image",
-        url: "/mock-media/riso-eyes-zine.png",
-        alt: title,
-      };
-    case "website":
-    default:
-      return {
-        type: "image",
-        url: "/mock-media/living-bookmarks.png",
-        alt: title,
-      };
-  }
-}
 
 function defaultState(): PersistedState {
   return {
@@ -201,6 +145,9 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         if (hasValidPosts) {
           setState({
             ...parsed,
+            notifications: Array.isArray(parsed.notifications)
+              ? parsed.notifications.filter((n) => n && n.type === "reply")
+              : INITIAL_NOTIFICATIONS,
             analytics: {
               ...parsed.analytics,
               returnVisits: (parsed.analytics?.returnVisits ?? 28) + 1,
@@ -267,57 +214,34 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
-  const completeOnboarding: CommunityContextValue["completeOnboarding"] = ({
-    name,
-    kind,
-    title,
-    sourceUrl,
-    originalCreator,
-    personalTake,
-    tone,
-  }) => {
+  const completeOnboarding: CommunityContextValue["completeOnboarding"] = (input) => {
     const now = new Date().toISOString();
-    const cleanUrl = sourceUrl.trim().startsWith("http")
-      ? sourceUrl.trim()
-      : `https://${sourceUrl.trim() || "stilldesigners.com"}`;
-    const sourceHost = cleanUrl.replace(/^https?:\/\//, "").split("/")[0] || "stilldesigners.com";
+    const trimmedUrl = input.sourceUrl.trim();
+    const cleanUrl = trimmedUrl ? (normalizeUrl(trimmedUrl) ?? trimmedUrl) : "";
+    const resolvedSourceName =
+      input.sourceName.trim() || (cleanUrl ? extractHost(cleanUrl) : "");
     const [restTilt, hoverTilt] = TILT_PAIRS[state.posts.length % TILT_PAIRS.length];
-    const displayName = name.trim() || DEMO_USERS.maya.name;
+    const displayName = input.name.trim() || DEMO_USERS.maya.name;
 
     const newPost: DiscoveryPost = {
       id: `post-${Date.now()}`,
-      title: title.trim(),
-      kind,
-      tone,
-      media: defaultMediaForKind(
-        kind,
-        title.trim(),
-        personalTake.trim(),
-        originalCreator.trim() || sourceHost
-      ),
+      title: input.title.trim(),
+      kind: input.kind,
+      tone: input.tone,
+      media: input.media,
       restTilt,
       hoverTilt,
       authorId: DEMO_USERS.maya.id,
       authorName: displayName,
       authorHandle: `@${displayName.toLowerCase().replace(/[^a-z0-9]/g, "") || "designer"}`,
-      authorRole: "Member",
-      authorTone: tone,
+      authorTone: input.tone,
       createdAt: now,
       lastActivityAt: now,
-      originalCreator: originalCreator.trim() || sourceHost,
-      sourceName: sourceHost,
+      originalCreator: input.originalCreator.trim() || displayName,
+      sourceName: resolvedSourceName,
       sourceUrl: cleanUrl,
-      attributionNote:
-        "External inspiration shared during onboarding—credit belongs to the original creator.",
-      excerpts: [
-        {
-          id: `ex-${Date.now()}`,
-          text: personalTake.trim(),
-        },
-      ],
-      personalTake: personalTake.trim(),
+      personalTake: input.personalTake.trim(),
       visualPins: [],
-      perspectives: [],
       reactions: { thumbsUp: [], heart: [] },
       reports: [],
     };
@@ -361,23 +285,15 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       authorId: user.id,
       authorName: user.name,
       authorHandle: user.handle,
-      authorRole: user.roleTitle,
       authorTone: user.tone,
       createdAt: now,
       lastActivityAt: now,
       originalCreator: input.originalCreator.trim() || user.name,
       sourceName: resolvedSourceName,
       sourceUrl: cleanUrl,
-      attributionNote:
-        "Shared for inspiration and discussion—credit belongs to the original creator.",
-      excerpts: input.excerptText.trim()
-        ? [{ id: `ex-${Date.now()}`, text: input.excerptText.trim() }]
-        : [],
       personalTake: input.personalTake.trim(),
-      discussionPrompt: input.discussionPrompt?.trim() || undefined,
       visualPins: [],
       promptId: input.promptId,
-      perspectives: [],
       reactions: { thumbsUp: [], heart: [] },
       reports: [],
     };
@@ -403,10 +319,6 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
               ...p,
               title: patch.title.trim(),
               personalTake: patch.personalTake.trim(),
-              discussionPrompt:
-                patch.discussionPrompt !== undefined
-                  ? patch.discussionPrompt.trim() || undefined
-                  : p.discussionPrompt,
               editedAt: now,
             }
           : p
@@ -500,51 +412,6 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
               },
               ...next.saves,
             ],
-      };
-    });
-  };
-
-  const addPerspective = (postId: string, text: string) => {
-    if (!currentUser || !text.trim()) return;
-    const now = new Date().toISOString();
-    const post = state.posts.find((p) => p.id === postId);
-    setState((prev) => {
-      const next = recordFirstParticipation(prev);
-      const nextNotifications = [...next.notifications];
-      if (post && post.authorId !== currentUser.id) {
-        nextNotifications.unshift({
-          id: `notif-${Date.now()}`,
-          type: "perspective",
-          actorName: currentUser.name,
-          postId,
-          postTitle: post.title || post.originalCreator || "Untitled discovery",
-          snippet: `Added a perspective: "${text.trim().slice(0, 64)}"`,
-          createdAt: now,
-          read: false,
-        });
-      }
-      return {
-        ...next,
-        notifications: nextNotifications,
-        posts: next.posts.map((p) =>
-          p.id === postId
-            ? {
-                ...p,
-                lastActivityAt: now,
-                perspectives: [
-                  ...p.perspectives,
-                  {
-                    id: `persp-${Date.now()}`,
-                    authorId: currentUser.id,
-                    authorName: currentUser.name,
-                    authorTone: currentUser.tone,
-                    text: text.trim(),
-                    createdAt: now,
-                  },
-                ],
-              }
-            : p
-        ),
       };
     });
   };
@@ -740,7 +607,6 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         togglePostReaction,
         toggleSavePost,
         isPostSaved,
-        addPerspective,
         addVisualPin,
         addComment,
         updateComment,

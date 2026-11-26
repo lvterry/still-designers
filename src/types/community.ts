@@ -22,14 +22,12 @@ export type DiscoveryMedia =
       type: "image";
       url: string;
       alt: string;
-      caption?: string;
     }
   | {
       type: "gif";
       url: string;
       posterUrl: string;
       alt: string;
-      caption?: string;
     }
   | {
       type: "video";
@@ -38,7 +36,6 @@ export type DiscoveryMedia =
       alt: string;
       durationSeconds?: number;
       hasAudio?: boolean;
-      caption?: string;
     }
   | {
       type: "link";
@@ -57,7 +54,6 @@ export interface Author {
   id: string;
   name: string;
   handle: string;
-  roleTitle: string;
   tone: CardTone;
   initials: string;
 }
@@ -67,20 +63,6 @@ export interface VisualPin {
   x: number; // percentage 0..100
   y: number; // percentage 0..100
   label: string;
-}
-
-export interface ExcerptSegment {
-  id: string;
-  text: string;
-}
-
-export interface Perspective {
-  id: string;
-  authorId: string;
-  authorName: string;
-  authorTone: CardTone;
-  text: string;
-  createdAt: string;
 }
 
 export interface CommentItem {
@@ -93,7 +75,7 @@ export interface CommentItem {
   text: string;
   createdAt: string;
   editedAt?: string;
-  anchorType?: "visual" | "excerpt";
+  anchorType?: "visual" | "quote";
   anchorId?: string;
   anchorLabel?: string;
   reactions: {
@@ -113,7 +95,6 @@ export interface DiscoveryPost {
   authorId: string;
   authorName: string;
   authorHandle: string;
-  authorRole: string;
   authorTone: CardTone;
   createdAt: string;
   lastActivityAt: string;
@@ -123,19 +104,15 @@ export interface DiscoveryPost {
   originalCreator: string;
   sourceName: string;
   sourceUrl: string;
-  attributionNote: string;
 
   // Rich content
-  excerpts: ExcerptSegment[];
   personalTake: string;
-  discussionPrompt?: string;
   visualPins: VisualPin[];
 
   // Optional weekly prompt link
   promptId?: string;
 
   // Community interaction
-  perspectives: Perspective[];
   reactions: {
     thumbsUp: string[];
     heart: string[];
@@ -158,7 +135,7 @@ export interface SavedEntry {
 
 export interface NotificationItem {
   id: string;
-  type: "reply" | "perspective";
+  type: "reply";
   actorName: string;
   postId: string;
   postTitle: string;

@@ -91,9 +91,8 @@ export function AboutView({
               </h3>
             </div>
             <p className="mt-2 text-[14.5px] leading-relaxed text-ink-secondary">
-              Drop numbered visual pins directly onto details of an image, click attributed
-              excerpts to start anchored threads, or add your own perspective without duplicating
-              someone else&apos;s post.
+              Drop numbered visual pins directly onto details of an image or clip, or click a quote
+              to start an anchored thread.
             </p>
           </div>
 
@@ -120,8 +119,8 @@ export function AboutView({
             </div>
             <p className="mt-2 text-[14.5px] leading-relaxed text-ink-secondary">
               A single shared feed ordered by recent activity (new shares and fresh replies)—zero
-              ranking algorithms, quiet reactions (notifications only fire for real replies and
-              perspectives), and a personal favorites shelf that preserves original credit.
+              ranking algorithms, quiet reactions (notifications only fire for real replies), and a
+              personal favorites shelf that preserves original credit.
             </p>
           </div>
         </div>

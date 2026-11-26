@@ -9,9 +9,7 @@ import {
   ExternalLink,
   Flag,
   Heart,
-  MessageSquarePlus,
   Pencil,
-  Quote,
   Reply,
   ShieldAlert,
   ThumbsUp,
@@ -61,7 +59,6 @@ export function CardDetailModal({
     togglePostReaction,
     toggleSavePost,
     isPostSaved,
-    addPerspective,
     addVisualPin,
     addComment,
     updateComment,
@@ -73,9 +70,9 @@ export function CardDetailModal({
     adminRemovePost,
   } = useCommunity();
 
-  const [commentFilter, setCommentFilter] = useState<"all" | "visual" | "excerpt">("all");
+  const [commentFilter, setCommentFilter] = useState<"all" | "visual" | "quote">("all");
   const [selectedAnchor, setSelectedAnchor] = useState<{
-    type: "visual" | "excerpt";
+    type: "visual" | "quote";
     id: string;
     label: string;
   } | null>(null);
@@ -92,10 +89,6 @@ export function CardDetailModal({
   const [replyText, setReplyText] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingCommentText, setEditingCommentText] = useState("");
-
-  // Add perspective
-  const [perspectiveOpen, setPerspectiveOpen] = useState(false);
-  const [perspectiveText, setPerspectiveText] = useState("");
 
   // Edit own post
   const [editingPost, setEditingPost] = useState(false);
@@ -154,8 +147,6 @@ export function CardDetailModal({
     setReplyingToId(null);
     setReplyText("");
     setEditingCommentId(null);
-    setPerspectiveOpen(false);
-    setPerspectiveText("");
     setEditingPost(false);
     setEditTitle(post.title);
     setEditTake(post.personalTake);
@@ -206,8 +197,8 @@ export function CardDetailModal({
     if (commentFilter === "visual") {
       return roots.filter((c) => c.anchorType === "visual");
     }
-    if (commentFilter === "excerpt") {
-      return roots.filter((c) => c.anchorType === "excerpt");
+    if (commentFilter === "quote") {
+      return roots.filter((c) => c.anchorType === "quote");
     }
     return roots;
   }, [postComments, commentFilter]);
@@ -225,6 +216,13 @@ export function CardDetailModal({
 
   const saved = isPostSaved(post.id);
   const isOwner = Boolean(currentUser && currentUser.id === post.authorId);
+  const supportsVisualPins =
+    post.media.type === "image" ||
+    post.media.type === "gif" ||
+    post.media.type === "video" ||
+    (post.media.type === "link" &&
+      post.media.embedType !== "youtube" &&
+      Boolean(post.media.thumbnailUrl));
   const thumbsActive = Boolean(
     currentUser && post.reactions.thumbsUp.includes(currentUser.id)
   );
@@ -276,16 +274,6 @@ export function CardDetailModal({
       });
       setReplyText("");
       setReplyingToId(null);
-    });
-  };
-
-  const handleSubmitPerspective = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!perspectiveText.trim()) return;
-    requireMemberAction("Join in to add your perspective on this discovery.", () => {
-      addPerspective(post.id, perspectiveText);
-      setPerspectiveText("");
-      setPerspectiveOpen(false);
     });
   };
 
@@ -364,7 +352,7 @@ export function CardDetailModal({
             : { type: "spring", stiffness: 320, damping: 30, mass: 0.9 },
         }}
         onClick={(e) => e.stopPropagation()}
-        className="relative z-40 flex max-h-[90vh] w-full max-w-[1080px] flex-col overflow-hidden bg-elevated shadow-[var(--shadow-modal)]"
+        className="relative z-40 flex h-[90vh] w-full max-w-[1080px] flex-col overflow-hidden bg-elevated shadow-[var(--shadow-modal)]"
       >
         {/* Colored modal top band carrying the card's identity */}
         <div
@@ -438,10 +426,10 @@ export function CardDetailModal({
               ? { duration: 0 }
               : { duration: 0.16, delay: 0.04 }
           }
-          className="grid flex-1 overflow-y-auto lg:grid-cols-[1.15fr_0.95fr] lg:overflow-hidden"
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:grid lg:grid-cols-[1.15fr_0.95fr] lg:overflow-hidden"
         >
-          {/* Left column: Visual + excerpts + personal take + lineage */}
-          <div className="space-y-6 px-5 py-6 sm:px-8 lg:overflow-y-auto lg:border-r lg:border-line">
+          {/* Left column: Visual + personal take */}
+          <div className="shrink-0 space-y-6 px-5 py-6 sm:px-8 lg:shrink lg:overflow-y-auto lg:border-r lg:border-line">
             {/* Interactive media stage (quote, image, GIF, or short video clip) */}
             <div>
               <ModalMediaStage
@@ -470,13 +458,12 @@ export function CardDetailModal({
                 }}
                 onAnchorQuote={() => {
                   if (post.media.type !== "quote") return;
-                  const firstExcerpt = post.excerpts[0];
                   setSelectedAnchor({
-                    type: "excerpt",
-                    id: firstExcerpt?.id ?? "main-quote",
+                    type: "quote",
+                    id: "main-quote",
                     label: `Main quote · '${post.media.quoteText.slice(0, 44)}...'`,
                   });
-                  setCommentFilter("excerpt");
+                  setCommentFilter("quote");
                 }}
               />
 
@@ -558,122 +545,12 @@ export function CardDetailModal({
                 <p className="text-[15.5px] leading-[1.6] text-ink">
                   {post.personalTake}
                 </p>
-
-                {post.discussionPrompt && (
-                  <p className="border-l-4 border-sun pl-4 text-[15px] leading-relaxed font-semibold text-ink">
-                    Question to kick off discussion: {post.discussionPrompt}
-                  </p>
-                )}
               </div>
             )}
-
-            {/* Attributed excerpts (clickable to anchor a comment!) */}
-            {post.excerpts.length > 0 && (
-              <div className="space-y-3 border-t border-line pt-5">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-[16px] font-extrabold text-ink">
-                    Short attributed excerpts
-                  </h3>
-                  <span className="text-[13px] text-ink-muted">
-                    Click an excerpt to discuss it
-                  </span>
-                </div>
-                <div className="space-y-3">
-                  {post.excerpts.map((ex, idx) => {
-                    const isFocused = selectedAnchor?.id === ex.id;
-                    return (
-                      <button
-                        key={ex.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedAnchor({
-                            type: "excerpt",
-                            id: ex.id,
-                            label: `Excerpt #${idx + 1} · '${ex.text.slice(0, 44)}...'`,
-                          });
-                          setCommentFilter("excerpt");
-                        }}
-                        className={cn(
-                          "group flex w-full items-start gap-3 border-l-4 py-1 pl-4 text-left transition-colors",
-                          isFocused
-                            ? "border-coral bg-subtle-surface"
-                            : "border-line-strong hover:border-cobalt hover:bg-subtle-surface/60"
-                        )}
-                      >
-                        <Quote className="mt-1 h-4 w-4 shrink-0 text-ink-muted group-hover:text-cobalt" />
-                        <span className="text-[15px] leading-relaxed text-ink italic">
-                          “{ex.text}”
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Added perspectives from other members */}
-            <div className="space-y-3 border-t border-line pt-5">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="text-[16px] font-extrabold text-ink">
-                  Other perspectives ({post.perspectives.length})
-                </h3>
-                <button
-                  type="button"
-                  onClick={() =>
-                    requireMemberAction(
-                      "Join in to add your own perspective on this discovery.",
-                      () => setPerspectiveOpen((prev) => !prev)
-                    )
-                  }
-                  className="inline-flex items-center gap-1 text-[14px] font-bold text-cobalt hover:underline"
-                >
-                  <MessageSquarePlus className="h-4 w-4" />
-                  {perspectiveOpen ? "Close" : "Add your perspective"}
-                </button>
-              </div>
-
-              {perspectiveOpen && (
-                <form onSubmit={handleSubmitPerspective} className="space-y-2">
-                  <textarea
-                    rows={2}
-                    value={perspectiveText}
-                    onChange={(e) => setPerspectiveText(e.target.value)}
-                    placeholder="Share a different angle on why this work matters..."
-                    className="w-full resize-none rounded-2xl border-2 border-line bg-canvas px-3.5 py-2.5 text-[14.5px] text-ink transition-colors focus:border-cobalt focus:outline-none"
-                  />
-                  <button
-                    type="submit"
-                    data-tone="pink"
-                    className="toy-button rounded-xl px-4 py-1.5 text-[14px] font-bold"
-                  >
-                    Post perspective
-                  </button>
-                </form>
-              )}
-
-              {post.perspectives.length === 0 ? (
-                <p className="text-[14px] text-ink-muted">
-                  No extra perspectives yet—add your own take without creating a duplicate post.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {post.perspectives.map((p) => (
-                    <div key={p.id} className="border-l-4 border-pink pl-4">
-                      <p className="text-[14.5px] leading-relaxed text-ink">
-                        {p.text}
-                      </p>
-                      <span className="mt-1 block text-[12.5px] font-semibold text-ink-muted">
-                        Perspective by {p.authorName} · {formatShortTime(p.createdAt)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Right column: Actions + threaded & anchored discussions */}
-          <div className="flex flex-col border-t border-line bg-subtle-surface/40 lg:overflow-hidden lg:border-t-0">
+          <div className="flex min-h-0 flex-1 flex-col border-t border-line bg-subtle-surface/40 lg:overflow-hidden lg:border-t-0">
             {/* Action strip */}
             <div className="shrink-0 space-y-3 border-b border-line px-5 py-4 sm:px-6">
               <div className="flex flex-wrap items-center gap-2">
@@ -837,16 +714,24 @@ export function CardDetailModal({
             <div className="flex shrink-0 items-center gap-5 overflow-x-auto border-b border-line px-5 pt-3 sm:px-6">
               {(
                 [
-                  { id: "all", label: `Discussion (${postComments.length})` },
-                  {
-                    id: "visual",
-                    label: `Visual pins (${postComments.filter((c) => c.anchorType === "visual").length})`,
-                  },
-                  {
-                    id: "excerpt",
-                    label: `Excerpts (${postComments.filter((c) => c.anchorType === "excerpt").length})`,
-                  },
-                ] as const
+                  { id: "all" as const, label: `Discussion (${postComments.length})` },
+                  ...(post.media.type === "quote"
+                    ? [
+                        {
+                          id: "quote" as const,
+                          label: `Quote (${postComments.filter((c) => c.anchorType === "quote").length})`,
+                        },
+                      ]
+                    : []),
+                  ...(supportsVisualPins
+                    ? [
+                        {
+                          id: "visual" as const,
+                          label: `Visual pins (${postComments.filter((c) => c.anchorType === "visual").length})`,
+                        },
+                      ]
+                    : []),
+                ]
               ).map((tab) => {
                 const active = commentFilter === tab.id;
                 return (
@@ -872,8 +757,11 @@ export function CardDetailModal({
             <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4 sm:px-6">
               {rootComments.length === 0 ? (
                 <p className="py-6 text-[14px] text-ink-muted">
-                  No notes here yet. Click an excerpt, drop a pin on the visual, or
-                  start a friendly thread below.
+                  {post.media.type === "quote"
+                    ? "No notes here yet. Click the quote or start a friendly thread below."
+                    : supportsVisualPins
+                      ? "No notes here yet. Drop a pin on the visual or start a friendly thread below."
+                      : "No notes here yet. Start a friendly thread below."}
                 </p>
               ) : (
                 rootComments.map((cmt) => {

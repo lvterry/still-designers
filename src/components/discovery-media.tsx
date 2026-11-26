@@ -613,12 +613,6 @@ export function ModalMediaStage({
         )}
       </div>
 
-      {media.type !== "link" && media.caption && (
-        <p className="mt-2 text-[13px] font-medium text-ink-muted">
-          {media.caption}
-        </p>
-      )}
-
       {media.type === "link" && (
         <div className="mt-2 flex items-center justify-between gap-2 text-[13px]">
           <span className="truncate font-semibold text-ink-secondary">
