@@ -16,9 +16,11 @@ import {
 import { useCommunity, type CreatePostInput } from "@/context/community-context";
 import { cn } from "@/lib/cn";
 import {
+  canonicalizeTweetUrl,
   deriveFilenameSuggestion,
   detectLinkFallback,
   extractHost,
+  formatLinkFallbackText,
   isEmbeddablePageUrl,
   isGifUrl,
   normalizeUrl,
@@ -136,16 +138,16 @@ export function DiscoveryComposerForm({
 
   // Shared fields
   const [author, setAuthor] = useState("");
-  const [authorTouched, setAuthorTouched] = useState(false);
   const [optionalSourceUrl, setOptionalSourceUrl] = useState("");
   const [title, setTitle] = useState("");
-  const [titleTouched, setTitleTouched] = useState(false);
   const [titleDerivedFromLink, setTitleDerivedFromLink] = useState(false);
   const [personalTake, setPersonalTake] = useState("");
   const [tone, setTone] = useState<CardTone>(defaultTone);
   const [attachToWeeklyPrompt, setAttachToWeeklyPrompt] = useState(false);
   const [error, setError] = useState("");
 
+  const authorTouchedRef = useRef(false);
+  const titleTouchedRef = useRef(false);
   const imageFileInputRef = useRef<HTMLInputElement | null>(null);
   const videoFileInputRef = useRef<HTMLInputElement | null>(null);
   const createdBlobUrlsRef = useRef<Set<string>>(new Set());
@@ -189,10 +191,10 @@ export function DiscoveryComposerForm({
     setLinkPreview(null);
     setLinkLoading(false);
     setAuthor("");
-    setAuthorTouched(false);
+    authorTouchedRef.current = false;
     setOptionalSourceUrl("");
     setTitle("");
-    setTitleTouched(false);
+    titleTouchedRef.current = false;
     setTitleDerivedFromLink(false);
     setPersonalTake("");
     setTone(defaultTone);
@@ -207,7 +209,10 @@ export function DiscoveryComposerForm({
     };
   }, [revokeAllUncommittedBlobs]);
 
-  const normalizedLinkUrl = useMemo(() => normalizeUrl(linkUrl), [linkUrl]);
+  const normalizedLinkUrl = useMemo(() => {
+    const normalized = normalizeUrl(linkUrl);
+    return normalized ? canonicalizeTweetUrl(normalized) : null;
+  }, [linkUrl]);
   const linkFallback = useMemo(
     () => (normalizedLinkUrl ? detectLinkFallback(normalizedLinkUrl) : null),
     [normalizedLinkUrl]
@@ -224,7 +229,7 @@ export function DiscoveryComposerForm({
     const fallback = detectLinkFallback(normalizedLinkUrl);
     setLinkPreview(fallback);
 
-    if (fallback?.author && !authorTouched) {
+    if (fallback?.author && !authorTouchedRef.current) {
       setAuthor(fallback.author);
     }
 
@@ -245,10 +250,10 @@ export function DiscoveryComposerForm({
         if (controller.signal.aborted) return;
 
         setLinkPreview(data);
-        if (data.author && !authorTouched) {
+        if (data.author && !authorTouchedRef.current) {
           setAuthor(data.author);
         }
-        if (data.title && !titleTouched) {
+        if (data.title && !titleTouchedRef.current) {
           setTitle(data.title);
           setTitleDerivedFromLink(true);
         }
@@ -265,7 +270,7 @@ export function DiscoveryComposerForm({
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [open, contentType, normalizedLinkUrl, authorTouched, titleTouched]);
+  }, [open, contentType, normalizedLinkUrl]);
 
   const handleSelectContentType = (next: ComposerContentType) => {
     setContentType(next);
@@ -1037,7 +1042,7 @@ export function DiscoveryComposerForm({
                   <p className="line-clamp-3 text-[13.5px] leading-snug font-medium text-ink">
                     {linkPreview.tweetText}
                   </p>
-                ) : (
+                ) : linkPreview.title || linkPreview.description ? (
                   <>
                     {linkPreview.title && (
                       <p className="line-clamp-2 text-[14px] font-extrabold text-ink">
@@ -1050,6 +1055,12 @@ export function DiscoveryComposerForm({
                       </p>
                     )}
                   </>
+                ) : (
+                  !linkLoading && (
+                    <p className="break-words text-[13px] font-medium text-ink-secondary">
+                      {formatLinkFallbackText(linkPreview)}
+                    </p>
+                  )
                 )}
               </div>
             </div>
@@ -1067,7 +1078,7 @@ export function DiscoveryComposerForm({
           value={author}
           onChange={(e) => {
             setAuthor(e.target.value);
-            setAuthorTouched(true);
+            authorTouchedRef.current = true;
             if (error) setError("");
           }}
           placeholder={
@@ -1114,7 +1125,7 @@ export function DiscoveryComposerForm({
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              setTitleTouched(true);
+              titleTouchedRef.current = true;
               setTitleDerivedFromLink(false);
             }}
             placeholder={
@@ -1129,7 +1140,7 @@ export function DiscoveryComposerForm({
               type="button"
               onClick={() => {
                 setTitle("");
-                setTitleTouched(true);
+                titleTouchedRef.current = true;
                 setTitleDerivedFromLink(false);
               }}
               aria-label="Clear title"
@@ -1149,7 +1160,7 @@ export function DiscoveryComposerForm({
             type="button"
             onClick={() => {
               setTitle(activeFileSuggestion);
-              setTitleTouched(true);
+              titleTouchedRef.current = true;
             }}
             className="mt-1.5 text-[12.5px] font-bold text-cobalt hover:underline"
           >

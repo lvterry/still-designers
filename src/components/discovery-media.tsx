@@ -7,11 +7,11 @@ import {
   MapPin,
   Pause,
   Play,
-  Snowflake,
   Volume2,
   VolumeX,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { formatLinkFallbackText } from "@/lib/link-utils";
 import type { DiscoveryMedia, VisualPin } from "@/types/community";
 
 function formatDuration(totalSeconds: number) {
@@ -216,11 +216,11 @@ export function CardMediaPreview({
                 <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-70" />
               </div>
 
-              <p className="line-clamp-3 text-[14.5px] leading-snug font-bold text-ink">
+              <p className="line-clamp-3 break-words text-[14.5px] leading-snug font-bold text-ink">
                 {media.tweetText ||
                   media.previewTitle ||
                   media.previewDescription ||
-                  media.url}
+                  formatLinkFallbackText(media)}
               </p>
 
               <span className="truncate text-[12px] font-semibold text-ink-muted">
@@ -269,7 +269,6 @@ export function ModalMediaStage({
   onAnchorQuote,
 }: ModalMediaStageProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [gifFrozen, setGifFrozen] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(true);
   const [videoMuted, setVideoMuted] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
@@ -280,7 +279,6 @@ export function ModalMediaStage({
 
   // Reset media playback state when switching cards
   useEffect(() => {
-    setGifFrozen(false);
     setVideoPlaying(true);
     setVideoMuted(true);
     setCurrentTime(0);
@@ -325,9 +323,6 @@ export function ModalMediaStage({
             {media.quoteSource ? `, ${media.quoteSource}` : ""}
           </p>
         </button>
-        <p className="mt-2.5 text-[13px] text-ink-muted">
-          Click the quote to discuss it directly.
-        </p>
       </div>
     );
   }
@@ -344,20 +339,6 @@ export function ModalMediaStage({
               allowFullScreen
               className="h-full w-full border-0"
             />
-          </div>
-          <div className="mt-2.5 flex items-center justify-between gap-2 text-[13px]">
-            <span className="truncate font-medium text-ink-secondary">
-              {media.previewTitle || "YouTube video"}
-            </span>
-            <a
-              href={media.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center gap-1 font-bold text-cobalt hover:underline"
-            >
-              Watch on YouTube
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
           </div>
         </div>
       );
@@ -379,7 +360,7 @@ export function ModalMediaStage({
               <p className="mt-3 text-[17px] leading-[1.45] font-bold text-ink">
                 {media.tweetText}
               </p>
-            ) : (
+            ) : media.previewTitle || media.previewDescription ? (
               <>
                 {media.previewTitle && (
                   <h4 className="mt-3 text-[18px] leading-snug font-extrabold text-ink">
@@ -392,24 +373,16 @@ export function ModalMediaStage({
                   </p>
                 )}
               </>
+            ) : (
+              <p className="mt-3 break-words text-[16px] leading-[1.45] font-bold text-ink-secondary">
+                {formatLinkFallbackText(media)}
+              </p>
             )}
-
-            <a
-              href={media.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-bold text-cobalt hover:underline"
-            >
-              Open on {media.host}
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
           </div>
         </div>
       );
     }
   }
-
-  const effectiveGifFrozen = media.type === "gif" && (gifFrozen || pinMode);
 
   const toggleVideoPlay = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -472,12 +445,12 @@ export function ModalMediaStage({
         {media.type === "gif" && (
           <>
             <img
-              src={effectiveGifFrozen ? media.posterUrl : media.url}
+              src={media.url}
               alt={media.alt}
               className="h-full w-full object-cover"
             />
             <span className="pointer-events-none absolute top-3 left-3 rounded-lg bg-ink/75 px-2.5 py-1 text-[11px] font-extrabold tracking-[0.06em] text-ink-on-bold backdrop-blur-xs">
-              {effectiveGifFrozen ? "PAUSED" : "GIF"}
+              GIF
             </span>
           </>
         )}
@@ -613,55 +586,15 @@ export function ModalMediaStage({
         )}
       </div>
 
-      {media.type === "link" && (
-        <div className="mt-2 flex items-center justify-between gap-2 text-[13px]">
-          <span className="truncate font-semibold text-ink-secondary">
-            {media.previewTitle || media.host}
-          </span>
-          <a
-            href={media.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-1 font-bold text-cobalt hover:underline"
-          >
-            Open on {media.host}
-            <ExternalLink className="h-3.5 w-3.5" />
-          </a>
-        </div>
-      )}
-
-      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[13px]">
-        <span className="text-ink-secondary">
-          {pinMode
-            ? media.type === "video"
-              ? "Video paused — click anywhere on the frame to place a numbered pin."
-              : "Click anywhere on the visual to place a numbered pin."
-            : visualPins.length > 0
-              ? "Click a numbered dot on the visual to focus its discussion."
-              : "Attach a note directly to any detail on this visual."}
-        </span>
-
-        <div className="flex items-center gap-4">
-          {media.type === "gif" && !pinMode && (
-            <button
-              type="button"
-              onClick={() => setGifFrozen((prev) => !prev)}
-              className="inline-flex items-center gap-1.5 font-bold text-ink-secondary hover:text-ink"
-            >
-              <Snowflake className="h-3.5 w-3.5" />
-              {gifFrozen ? "Play loop" : "Freeze frame"}
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={onTogglePinMode}
-            className="inline-flex items-center gap-1.5 font-bold text-cobalt hover:underline"
-          >
-            <MapPin className="h-4 w-4" />
-            {pinMode ? "Cancel pin mode" : "Pin a note on this visual"}
-          </button>
-        </div>
+      <div className="mt-2.5 flex items-center text-[13px]">
+        <button
+          type="button"
+          onClick={onTogglePinMode}
+          className="inline-flex items-center gap-1.5 font-bold text-cobalt hover:underline"
+        >
+          <MapPin className="h-4 w-4" />
+          {pinMode ? "Cancel pin mode" : "Pin a note"}
+        </button>
       </div>
     </div>
   );

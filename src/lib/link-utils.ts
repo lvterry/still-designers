@@ -142,6 +142,55 @@ export function isTweetUrl(rawUrl: string): boolean {
   }
 }
 
+/**
+ * Strips tracking query parameters and fragments from tweet status URLs
+ * (e.g. `?s=20&t=...`) while leaving non-status or non-X URLs unchanged.
+ */
+export function canonicalizeTweetUrl(rawUrl: string): string {
+  try {
+    const parsed = new URL(rawUrl);
+    const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
+    if (host !== "x.com" && host !== "twitter.com" && host !== "mobile.twitter.com") {
+      return rawUrl;
+    }
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    if (
+      parts.length >= 3 &&
+      parts[1] === "status" &&
+      /^\d+$/.test(parts[2]) &&
+      !RESERVED_X_SEGMENTS.has(parts[0].toLowerCase())
+    ) {
+      return `https://${host}/${parts[0]}/status/${parts[2]}`;
+    }
+    return rawUrl;
+  } catch {
+    return rawUrl;
+  }
+}
+
+/**
+ * Produces a readable fallback summary for link cards when metadata or tweet text
+ * is unavailable, avoiding raw URLs with long tracking query strings.
+ */
+export function formatLinkFallbackText(link: {
+  url: string;
+  host?: string;
+  embedType?: LinkEmbedType;
+  tweetAuthor?: string;
+}): string {
+  if (link.embedType === "tweet") {
+    return link.tweetAuthor ? `Post by ${link.tweetAuthor} on X` : "Post on X";
+  }
+  try {
+    const parsed = new URL(link.url);
+    const host = parsed.hostname.replace(/^www\./, "");
+    const path = parsed.pathname.replace(/\/+$/, "");
+    return path ? `${host}${path}` : host;
+  } catch {
+    return link.host || link.url;
+  }
+}
+
 export function isGifUrl(rawUrl: string): boolean {
   const normalized = normalizeUrl(rawUrl);
   if (!normalized) return /\.gif(\?.*)?$/i.test(rawUrl.trim());
@@ -200,9 +249,10 @@ export function detectLinkFallback(rawUrl: string): LinkPreviewMetadata | null {
     }
 
     if (isTweetUrl(normalized)) {
-      const handle = extractTweetHandle(normalized) ?? undefined;
+      const cleanUrl = canonicalizeTweetUrl(normalized);
+      const handle = extractTweetHandle(cleanUrl) ?? undefined;
       return {
-        url: normalized,
+        url: cleanUrl,
         host,
         kind: "article",
         embedType: "tweet",
