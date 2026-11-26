@@ -90,7 +90,7 @@ export function OnboardingGateModal({ onJoinedWithPost }: OnboardingGateModalPro
             <DiscoveryComposerForm
               open={gateModalOpen}
               defaultTone="emerald"
-              showWeeklyPromptOption={false}
+              showWeeklyPromptOption={true}
               autoFocusContent={false}
               submitLabel="Share and join in"
               footerHint="After this, you stay a member for good."

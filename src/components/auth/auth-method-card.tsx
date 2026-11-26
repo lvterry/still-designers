@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -13,47 +13,168 @@ interface AuthMethodCardProps {
   mode: "sign-in" | "sign-up";
 }
 
-type AuthStep = "choose" | "email" | "prototype-done";
-type AuthMethod = "email" | "google";
+type AuthStep = "choose" | "email" | "otp" | "google-preview";
+
+const EMPTY_OTP = ["", "", "", "", "", ""];
 
 export function AuthMethodCard({ mode }: AuthMethodCardProps) {
   const router = useRouter();
-  const { setRole, openGateModal } = useCommunity();
+  const { setRole, closeGateModal } = useCommunity();
 
   const [step, setStep] = useState<AuthStep>("choose");
-  const [method, setMethod] = useState<AuthMethod>("email");
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState<string[]>(EMPTY_OTP);
+  const [resent, setResent] = useState(false);
   const [error, setError] = useState("");
+
+  const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const isSignUp = mode === "sign-up";
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = email.trim();
-    if (!trimmed || !trimmed.includes("@") || trimmed.startsWith("@") || trimmed.endsWith("@")) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    setError("");
-    setMethod("email");
-    setStep("prototype-done");
-  };
-
-  const handleGoogleContinue = () => {
-    setError("");
-    setMethod("google");
-    setStep("prototype-done");
-  };
-
-  const handleTryOnboarding = () => {
+  const handleEnterAsNewMember = () => {
     setRole("onboarding");
-    openGateModal("Welcome! Share one spark to finish joining Still Designers.");
+    closeGateModal();
     router.push("/");
   };
 
   const handleJumpToDiscover = () => {
+    closeGateModal();
     setRole("member");
     router.push("/");
+  };
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (
+      !trimmed ||
+      !trimmed.includes("@") ||
+      trimmed.startsWith("@") ||
+      trimmed.endsWith("@")
+    ) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    setError("");
+    setOtp(EMPTY_OTP);
+    setResent(false);
+    setStep("otp");
+  };
+
+  const handleGoogleContinue = () => {
+    setError("");
+    setStep("google-preview");
+  };
+
+  const handleOtpChange = (idx: number, rawValue: string) => {
+    const digits = rawValue.replace(/\D/g, "");
+    if (!digits) {
+      const next = [...otp];
+      next[idx] = "";
+      setOtp(next);
+      if (error) setError("");
+      return;
+    }
+
+    if (digits.length > 1) {
+      const next = [...otp];
+      const start = digits.length >= 6 ? 0 : idx;
+      for (let i = 0; i < digits.length && start + i < 6; i++) {
+        next[start + i] = digits[i];
+      }
+      setOtp(next);
+      if (error) setError("");
+      const focusIdx = Math.min(start + digits.length - 1, 5);
+      otpRefs.current[focusIdx]?.focus();
+      return;
+    }
+
+    const next = [...otp];
+    next[idx] = digits;
+    setOtp(next);
+    if (error) setError("");
+    if (idx < 5) {
+      otpRefs.current[idx + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (
+    idx: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Backspace") {
+      if (otp[idx]) {
+        const next = [...otp];
+        next[idx] = "";
+        setOtp(next);
+        if (error) setError("");
+        e.preventDefault();
+      } else if (idx > 0) {
+        const next = [...otp];
+        next[idx - 1] = "";
+        setOtp(next);
+        if (error) setError("");
+        otpRefs.current[idx - 1]?.focus();
+        e.preventDefault();
+      }
+      return;
+    }
+
+    if (e.key === "ArrowLeft" && idx > 0) {
+      e.preventDefault();
+      otpRefs.current[idx - 1]?.focus();
+      return;
+    }
+
+    if (e.key === "ArrowRight" && idx < 5) {
+      e.preventDefault();
+      otpRefs.current[idx + 1]?.focus();
+      return;
+    }
+
+    if (/^[0-9]$/.test(e.key) && otp[idx]) {
+      e.preventDefault();
+      const next = [...otp];
+      next[idx] = e.key;
+      setOtp(next);
+      if (error) setError("");
+      if (idx < 5) {
+        otpRefs.current[idx + 1]?.focus();
+      }
+    }
+  };
+
+  const handleOtpPaste = (
+    idx: number,
+    e: React.ClipboardEvent<HTMLInputElement>
+  ) => {
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "");
+    if (!pasted) return;
+    e.preventDefault();
+    const next = [...otp];
+    const start = pasted.length >= 6 ? 0 : idx;
+    let lastFilled = start;
+    for (let i = 0; i < pasted.length && start + i < 6; i++) {
+      next[start + i] = pasted[i];
+      lastFilled = start + i;
+    }
+    setOtp(next);
+    if (error) setError("");
+    otpRefs.current[Math.min(lastFilled, 5)]?.focus();
+  };
+
+  const handleOtpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otp.join("").length < 6) {
+      setError("Please enter all 6 digits.");
+      return;
+    }
+    setError("");
+    if (isSignUp) {
+      handleEnterAsNewMember();
+    } else {
+      handleJumpToDiscover();
+    }
   };
 
   return (
@@ -163,10 +284,14 @@ export function AuthMethodCard({ mode }: AuthMethodCardProps) {
               {isSignUp ? "Sign up with email" : "Sign in with email"}
             </h1>
             <p className="mt-2 text-[14.5px] leading-relaxed font-medium text-ink-secondary">
-              We&apos;ll send a one-click link to your inbox.
+              We&apos;ll send a 6-digit code to your inbox.
             </p>
 
-            <form onSubmit={handleEmailSubmit} noValidate className="mt-6 space-y-4">
+            <form
+              onSubmit={handleEmailSubmit}
+              noValidate
+              className="mt-6 space-y-4"
+            >
               <div>
                 <label
                   htmlFor="auth-email-input"
@@ -209,57 +334,131 @@ export function AuthMethodCard({ mode }: AuthMethodCardProps) {
           </motion.div>
         )}
 
-        {step === "prototype-done" && (
+        {step === "otp" && (
           <motion.div
-            key="prototype-done"
+            key="otp"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="flex w-full max-w-[340px] flex-col"
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setError("");
+                setResent(false);
+                setStep("email");
+              }}
+              className="inline-flex w-fit items-center gap-1.5 rounded-xl px-1 py-1 text-[14px] font-bold text-ink-secondary transition-colors hover:text-ink"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back</span>
+            </button>
+
+            <h1 className="mt-4 text-[26px] leading-[1.15] font-extrabold tracking-[-0.02em] text-ink sm:text-[28px]">
+              Enter verification code
+            </h1>
+            <p className="mt-2 text-[14.5px] leading-relaxed font-medium text-ink-secondary">
+              We sent a 6-digit code to{" "}
+              <span className="font-bold text-ink">{email.trim()}</span>.
+            </p>
+
+            <form
+              onSubmit={handleOtpSubmit}
+              noValidate
+              className="mt-6 space-y-4"
+            >
+              <div>
+                <div
+                  role="group"
+                  aria-label="6-digit verification code"
+                  className="flex w-full divide-x-2 divide-line overflow-hidden rounded-2xl border-2 border-line bg-canvas transition-colors focus-within:border-cobalt focus-within:ring-2 focus-within:ring-cobalt/20"
+                >
+                  {otp.map((digit, idx) => (
+                    <input
+                      key={idx}
+                      ref={(el) => {
+                        otpRefs.current[idx] = el;
+                      }}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      autoComplete={idx === 0 ? "one-time-code" : "off"}
+                      maxLength={1}
+                      autoFocus={idx === 0}
+                      aria-label={`Digit ${idx + 1} of 6`}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(idx, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                      onPaste={(e) => handleOtpPaste(idx, e)}
+                      className="h-14 w-full min-w-0 bg-transparent text-center text-[20px] font-extrabold text-ink transition-colors focus:bg-elevated focus:outline-none focus-visible:outline-none"
+                    />
+                  ))}
+                </div>
+                {error && (
+                  <p className="mt-2 text-[13.5px] font-semibold text-danger">
+                    {error}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                data-tone="cobalt"
+                className="toy-button flex h-12 w-full items-center justify-center rounded-2xl px-5 text-[15.5px] font-extrabold"
+              >
+                {isSignUp ? "Verify and continue" : "Verify and sign in"}
+              </button>
+            </form>
+
+            <p className="mt-4 text-center text-[13.5px] font-medium text-ink-secondary">
+              Didn&apos;t get a code?{" "}
+              <button
+                type="button"
+                onClick={() => setResent(true)}
+                className="font-bold text-cobalt hover:underline"
+              >
+                {resent ? "Code resent!" : "Resend"}
+              </button>
+            </p>
+
+            <p className="mt-2 text-center text-[12.5px] font-medium text-ink-muted">
+              Prototype: enter any 6 digits to continue.
+            </p>
+          </motion.div>
+        )}
+
+        {step === "google-preview" && (
+          <motion.div
+            key="google-preview"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
             className="flex w-full max-w-[340px] flex-col items-center text-center"
           >
-            <PeekingBuddy
-              variant={method === "google" ? "blob" : "star"}
-              className="h-14 w-14"
-            />
+            <PeekingBuddy variant="blob" className="h-14 w-14" />
 
             <h1 className="mt-5 text-[24px] leading-tight font-extrabold tracking-[-0.015em] text-ink sm:text-[26px]">
-              {method === "email"
-                ? "Check your inbox (prototype)"
-                : "Google sign-in preview"}
+              Google sign-in preview
             </h1>
 
             <p className="mt-2.5 text-[14.5px] leading-relaxed font-medium text-ink-secondary">
-              {method === "email" ? (
-                <>
-                  We simulated sending a link to{" "}
-                  <span className="font-bold text-ink">{email.trim()}</span>.
-                  Real authentication isn&apos;t connected yet.
-                </>
-              ) : (
-                "Simulated continuing with Google. Real OAuth isn't connected yet."
-              )}
+              Simulated continuing with Google. Real OAuth isn&apos;t connected
+              yet.
             </p>
 
-            <div className="mt-7 w-full space-y-3">
+            <div className="mt-7 w-full">
               {isSignUp ? (
-                <>
-                  <button
-                    type="button"
-                    data-tone="coral"
-                    onClick={handleTryOnboarding}
-                    className="toy-button flex h-12 w-full items-center justify-center rounded-2xl px-5 text-[15px] font-extrabold"
-                  >
-                    Try the onboarding intro
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleJumpToDiscover}
-                    className="toy-button-soft flex h-12 w-full items-center justify-center rounded-2xl px-5 text-[15px] font-bold"
-                  >
-                    Jump straight into Discover
-                  </button>
-                </>
+                <button
+                  type="button"
+                  data-tone="coral"
+                  onClick={handleEnterAsNewMember}
+                  className="toy-button flex h-12 w-full items-center justify-center rounded-2xl px-5 text-[15px] font-extrabold"
+                >
+                  Enter Still Designers
+                </button>
               ) : (
                 <button
                   type="button"
@@ -267,7 +466,7 @@ export function AuthMethodCard({ mode }: AuthMethodCardProps) {
                   onClick={handleJumpToDiscover}
                   className="toy-button flex h-12 w-full items-center justify-center rounded-2xl px-5 text-[15px] font-extrabold"
                 >
-                  Continue to Discover as Maya
+                  Continue to Discover
                 </button>
               )}
             </div>

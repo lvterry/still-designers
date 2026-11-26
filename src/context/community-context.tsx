@@ -242,6 +242,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       sourceUrl: cleanUrl,
       personalTake: input.personalTake.trim(),
       visualPins: [],
+      promptId: input.promptId,
       reactions: { thumbsUp: [], heart: [] },
       reports: [],
     };

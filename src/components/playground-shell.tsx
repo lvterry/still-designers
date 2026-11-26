@@ -10,6 +10,7 @@ import { DiscoveryCard } from "@/components/discovery-card";
 import { PeekingBuddy } from "@/components/doodle-buddies";
 import { Header, type FeedView } from "@/components/header";
 import { OnboardingGateModal } from "@/components/onboarding-gate-modal";
+import { OnboardingWelcomeBanner } from "@/components/onboarding-welcome-banner";
 import { PrototypeDock } from "@/components/prototype-dock";
 import { useCommunity } from "@/context/community-context";
 import type { DiscoveryPost } from "@/types/community";
@@ -20,15 +21,18 @@ export function PlaygroundShell({
   initialView?: FeedView;
 }) {
   const {
+    role,
     posts,
     comments,
     saves,
     currentUser,
     pinnedPrompt,
+    openGateModal,
     requireMemberAction,
   } = useCommunity();
 
   const [view, setView] = useState<FeedView>(initialView);
+  const [welcomeDismissed, setWelcomeDismissed] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [skipLayoutTransition, setSkipLayoutTransition] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
@@ -101,6 +105,13 @@ export function PlaygroundShell({
     if (selectedIndex >= 0) return visiblePosts[selectedIndex];
     return activePosts.find((p) => p.id === selectedPostId) ?? null;
   }, [selectedPostId, selectedIndex, visiblePosts, activePosts]);
+
+  // Reset inline welcome banner whenever user enters onboarding state
+  useEffect(() => {
+    if (role === "onboarding") {
+      setWelcomeDismissed(false);
+    }
+  }, [role]);
 
   // Keep the background grid slot scrolled near viewport so shrink-back always lands cleanly
   useEffect(() => {
@@ -185,6 +196,19 @@ export function PlaygroundShell({
             </button>
           </div>
         )}
+
+        <AnimatePresence>
+          {view === "discover" && role === "onboarding" && !welcomeDismissed && (
+            <OnboardingWelcomeBanner
+              onShareFirstSpark={() =>
+                openGateModal(
+                  "Share one inspiring thing to unlock saving, reacting, and replies."
+                )
+              }
+              onDismiss={() => setWelcomeDismissed(true)}
+            />
+          )}
+        </AnimatePresence>
 
         {view === "prompt" && (
           <div
