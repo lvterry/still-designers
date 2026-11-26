@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Bell, Bookmark, ChevronDown, Plus, Sparkles, UserRound } from "lucide-react";
+import Link from "next/link";
+import {
+  Bell,
+  Bookmark,
+  ChevronDown,
+  LogOut,
+  Plus,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
 import { useCommunity } from "@/context/community-context";
 import { cn } from "@/lib/cn";
 
@@ -28,6 +37,7 @@ export function Header({
     markAllNotificationsRead,
     openGateModal,
     requireMemberAction,
+    setRole,
     saves,
   } = useCommunity();
 
@@ -209,21 +219,35 @@ export function Header({
           </button>
 
           {/* Login or Avatar Dropdown Menu (My favorites & My works) */}
-          {role === "visitor" || role === "onboarding" ? (
+          {role === "visitor" ? (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/sign-in"
+                className="toy-button-soft inline-flex h-10 items-center justify-center rounded-2xl px-3.5 text-[14.5px] font-bold"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/sign-up"
+                data-tone="cobalt"
+                className="toy-button inline-flex h-10 items-center justify-center rounded-2xl px-4 text-[14.5px] font-extrabold"
+              >
+                Sign up
+              </Link>
+            </div>
+          ) : role === "onboarding" ? (
             <button
               type="button"
               data-tone="cobalt"
               onClick={() =>
                 openGateModal(
-                  role === "onboarding"
-                    ? "Finish your one-step intro to unlock posting, saving, and discussions."
-                    : "Sign in and share one inspiring thing to join Still Designers."
+                  "Finish your one-step intro to unlock posting, saving, and discussions."
                 )
               }
               className="toy-button inline-flex h-10 items-center gap-1.5 rounded-2xl px-4 text-[15px] font-bold"
             >
               <UserRound className="h-4 w-4" />
-              <span>{role === "onboarding" ? "Finish intro" : "Sign in"}</span>
+              <span>Finish intro</span>
             </button>
           ) : (
             <div className="relative" ref={accountMenuRef}>
@@ -321,6 +345,21 @@ export function Header({
                     >
                       <Sparkles className="h-4 w-4 text-emerald" />
                       <span>My works</span>
+                    </button>
+                  </div>
+
+                  <div className="border-t border-line p-1.5">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        setRole("visitor");
+                      }}
+                      className="flex w-full items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left text-[14.5px] font-bold text-ink-secondary transition-colors hover:bg-subtle-surface hover:text-ink"
+                    >
+                      <LogOut className="h-4 w-4 text-ink-muted" />
+                      <span>Sign out</span>
                     </button>
                   </div>
                 </div>

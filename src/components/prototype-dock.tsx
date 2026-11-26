@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { RotateCcw, SlidersHorizontal, X } from "lucide-react";
 import { useCommunity } from "@/context/community-context";
 import { cn } from "@/lib/cn";
@@ -139,6 +140,27 @@ export function PrototypeDock({
               )}
             </div>
           )}
+
+          <div className="mt-3 space-y-2 border-t border-line pt-3 text-[13px]">
+            <span className="block font-bold text-ink-secondary">
+              Auth prototype pages
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/sign-in"
+                className="toy-button-soft flex h-9 items-center justify-center rounded-xl px-3 text-[13px] font-bold"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/sign-up"
+                data-tone="cobalt"
+                className="toy-button flex h-9 items-center justify-center rounded-xl px-3 text-[13px] font-extrabold"
+              >
+                Sign up
+              </Link>
+            </div>
+          </div>
 
           <div className="mt-4 flex justify-end border-t border-line pt-3">
             <button

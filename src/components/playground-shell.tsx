@@ -14,7 +14,11 @@ import { PrototypeDock } from "@/components/prototype-dock";
 import { useCommunity } from "@/context/community-context";
 import type { DiscoveryPost } from "@/types/community";
 
-export function PlaygroundShell() {
+export function PlaygroundShell({
+  initialView = "discover",
+}: {
+  initialView?: FeedView;
+}) {
   const {
     posts,
     comments,
@@ -24,7 +28,7 @@ export function PlaygroundShell() {
     requireMemberAction,
   } = useCommunity();
 
-  const [view, setView] = useState<FeedView>("discover");
+  const [view, setView] = useState<FeedView>(initialView);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [skipLayoutTransition, setSkipLayoutTransition] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
