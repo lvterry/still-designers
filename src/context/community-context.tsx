@@ -64,7 +64,7 @@ interface CommunityContextValue {
   gateReason: string;
   openGateModal: (reason?: string) => void;
   closeGateModal: () => void;
-  requireMemberAction: (reason: string, action: () => void) => void;
+  requireSignedInAction: (reason: string, action: () => void) => void;
 
   // Role & onboarding
   setRole: (role: Role) => void;
@@ -198,8 +198,8 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
 
   const closeGateModal = () => setGateModalOpen(false);
 
-  const requireMemberAction = (reason: string, action: () => void) => {
-    if (state.role === "visitor" || state.role === "onboarding") {
+  const requireSignedInAction = (reason: string, action: () => void) => {
+    if (state.role === "visitor") {
       openGateModal(reason);
       return;
     }
@@ -268,6 +268,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
 
   const createPost: CommunityContextValue["createPost"] = (input) => {
     const user = currentUser ?? DEMO_USERS.maya;
+    const isCompletingOnboarding = state.role === "onboarding";
     const now = new Date().toISOString();
     const [restTilt, hoverTilt] = TILT_PAIRS[state.posts.length % TILT_PAIRS.length];
     const trimmedUrl = input.sourceUrl.trim();
@@ -283,7 +284,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       media: input.media,
       restTilt,
       hoverTilt,
-      authorId: user.id,
+      authorId: isCompletingOnboarding ? DEMO_USERS.maya.id : user.id,
       authorName: user.name,
       authorHandle: user.handle,
       authorTone: user.tone,
@@ -300,10 +301,18 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     };
 
     setState((prev) => {
-      const next = recordFirstParticipation(prev);
+      const completingOnboarding = prev.role === "onboarding";
+      const next = completingOnboarding ? prev : recordFirstParticipation(prev);
       return {
         ...next,
+        role: completingOnboarding ? "member" : next.role,
         posts: [newPost, ...next.posts],
+        analytics: completingOnboarding
+          ? {
+              ...next.analytics,
+              onboardingCompleted: next.analytics.onboardingCompleted + 1,
+            }
+          : next.analytics,
       };
     });
 
@@ -596,7 +605,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         gateReason,
         openGateModal,
         closeGateModal,
-        requireMemberAction,
+        requireSignedInAction,
         setRole,
         completeOnboarding,
         resetPrototype,

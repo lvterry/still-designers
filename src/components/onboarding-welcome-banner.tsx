@@ -35,9 +35,9 @@ export function OnboardingWelcomeBanner({
             Welcome in! Peek around first.
           </h2>
           <p className="mt-1 max-w-xl text-[14.5px] leading-relaxed font-medium text-ink-secondary">
-            Browse a few cards to get a feel for the room. Whenever you&apos;re
-            ready, share one inspiring link, image, or quote to unlock saving
-            and replies.
+            Browse cards, react, or leave a note anytime. Whenever you&apos;re
+            ready, share one inspiring link, image, or quote to finish
+            onboarding.
           </p>
         </div>
       </div>

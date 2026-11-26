@@ -34,7 +34,7 @@ export function Header({
     notifications,
     unreadNotificationCount,
     markAllNotificationsRead,
-    requireMemberAction,
+    requireSignedInAction,
     setRole,
     saves,
   } = useCommunity();
@@ -75,7 +75,7 @@ export function Header({
   ];
 
   const handleOpenNotifications = () => {
-    requireMemberAction("Join in to see replies on your discoveries.", () => {
+    requireSignedInAction("Join in to see replies on your discoveries.", () => {
       setAccountMenuOpen(false);
       setNotifOpen((prev) => {
         const next = !prev;
@@ -147,7 +147,6 @@ export function Header({
             >
               <Bell className="h-[18px] w-[18px]" />
               {role !== "visitor" &&
-                role !== "onboarding" &&
                 unreadNotificationCount > 0 && (
                   <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-coral px-1 text-[11px] font-bold text-ink-on-bold">
                     {unreadNotificationCount}
@@ -205,7 +204,7 @@ export function Header({
             type="button"
             data-tone="coral"
             onClick={() =>
-              requireMemberAction(
+              requireSignedInAction(
                 "Share your first inspiring discovery to join and start posting.",
                 onOpenCompose
               )

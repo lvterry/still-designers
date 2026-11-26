@@ -27,8 +27,7 @@ export function PlaygroundShell({
     saves,
     currentUser,
     pinnedPrompt,
-    openGateModal,
-    requireMemberAction,
+    requireSignedInAction,
   } = useCommunity();
 
   const [view, setView] = useState<FeedView>(initialView);
@@ -200,11 +199,7 @@ export function PlaygroundShell({
         <AnimatePresence>
           {view === "discover" && role === "onboarding" && !welcomeDismissed && (
             <OnboardingWelcomeBanner
-              onShareFirstSpark={() =>
-                openGateModal(
-                  "Share one inspiring thing to unlock saving, reacting, and replies."
-                )
-              }
+              onShareFirstSpark={() => handleOpenRegularCompose(undefined)}
               onDismiss={() => setWelcomeDismissed(true)}
             />
           )}
@@ -236,7 +231,7 @@ export function PlaygroundShell({
               type="button"
               data-tone="cobalt"
               onClick={() =>
-                requireMemberAction(
+                requireSignedInAction(
                   "Share one spark first, then drop your take on this week's prompt!",
                   () => handleOpenRegularCompose(pinnedPrompt.id)
                 )
@@ -279,7 +274,12 @@ export function PlaygroundShell({
             <button
               type="button"
               data-tone="coral"
-              onClick={() => handleOpenRegularCompose(undefined)}
+              onClick={() =>
+                requireSignedInAction(
+                  "Share your first inspiring discovery to join and start posting.",
+                  () => handleOpenRegularCompose(undefined)
+                )
+              }
               className="toy-button inline-flex items-center gap-1.5 rounded-2xl px-4 py-2.5 text-[15px] font-extrabold"
             >
               <Plus className="h-4 w-4 stroke-[2.8]" />
@@ -297,7 +297,7 @@ export function PlaygroundShell({
               setView(next);
             }}
             onShareClick={() =>
-              requireMemberAction(
+              requireSignedInAction(
                 "Share your first inspiring discovery to join and start posting.",
                 () => handleOpenRegularCompose(undefined)
               )

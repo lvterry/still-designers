@@ -9,7 +9,7 @@ import type { Role } from "@/types/community";
 
 const ROLES: { id: Role; label: string; hint: string }[] = [
   { id: "visitor", label: "Public visitor", hint: "Browse only; actions trigger gate" },
-  { id: "onboarding", label: "At onboarding gate", hint: "Signed up, needs 1 spark" },
+  { id: "onboarding", label: "Newcomer (onboarding)", hint: "Signed up, hasn't shared 1st spark" },
   { id: "member", label: "Member (Maya)", hint: "Full participation unlocked" },
   { id: "admin", label: "Admin (Terry)", hint: "Can review reports & remove posts" },
 ];

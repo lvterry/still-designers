@@ -12,7 +12,7 @@ interface OnboardingGateModalProps {
 }
 
 export function OnboardingGateModal({ onJoinedWithPost }: OnboardingGateModalProps) {
-  const { gateModalOpen, gateReason, closeGateModal, completeOnboarding, role } =
+  const { gateModalOpen, gateReason, closeGateModal, completeOnboarding } =
     useCommunity();
 
   const [name, setName] = useState("Sam Rivera");
@@ -67,9 +67,7 @@ export function OnboardingGateModal({ onJoinedWithPost }: OnboardingGateModalPro
                 <PeekingBuddy variant="blob" className="mt-0.5 h-12 w-12 shrink-0" />
                 <div>
                   <h2 className="text-[24px] leading-tight font-extrabold">
-                    {role === "onboarding"
-                      ? "One last step to join in"
-                      : "Bring one spark to the table"}
+                    Bring one spark to the table
                   </h2>
                   <p className="mt-1.5 text-[15px] leading-snug opacity-85">
                     {gateReason} Share one inspiring thing—no essay or

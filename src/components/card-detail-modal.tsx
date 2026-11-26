@@ -55,7 +55,7 @@ export function CardDetailModal({
     role,
     currentUser,
     comments,
-    requireMemberAction,
+    requireSignedInAction,
     togglePostReaction,
     toggleSavePost,
     isPostSaved,
@@ -251,7 +251,7 @@ export function CardDetailModal({
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
-    requireMemberAction("Join in to leave a note or anchored reply.", () => {
+    requireSignedInAction("Join in to leave a note or anchored reply.", () => {
       addComment({
         postId: post.id,
         text: commentText,
@@ -266,7 +266,7 @@ export function CardDetailModal({
 
   const handleSubmitReply = (parentId: string) => {
     if (!replyText.trim()) return;
-    requireMemberAction("Join in to reply to this thread.", () => {
+    requireSignedInAction("Join in to reply to this thread.", () => {
       addComment({
         postId: post.id,
         parentId,
@@ -439,7 +439,7 @@ export function CardDetailModal({
                 draftPin={draftPin}
                 selectedAnchorId={selectedAnchor?.id}
                 onTogglePinMode={() =>
-                  requireMemberAction(
+                  requireSignedInAction(
                     "Join in to pin notes directly on visuals.",
                     () => {
                       setPinMode((prev) => !prev);
@@ -557,7 +557,7 @@ export function CardDetailModal({
                 <button
                   type="button"
                   onClick={() =>
-                    requireMemberAction("Join in to cheer on posts with reactions.", () =>
+                    requireSignedInAction("Join in to cheer on posts with reactions.", () =>
                       togglePostReaction(post.id, "thumbsUp")
                     )
                   }
@@ -574,7 +574,7 @@ export function CardDetailModal({
                 <button
                   type="button"
                   onClick={() =>
-                    requireMemberAction("Join in to cheer on posts with reactions.", () =>
+                    requireSignedInAction("Join in to cheer on posts with reactions.", () =>
                       togglePostReaction(post.id, "heart")
                     )
                   }
@@ -591,7 +591,7 @@ export function CardDetailModal({
                 <button
                   type="button"
                   onClick={() =>
-                    requireMemberAction("Join in to save discoveries to My favorites.", () =>
+                    requireSignedInAction("Join in to save discoveries to My favorites.", () =>
                       toggleSavePost(post.id)
                     )
                   }
@@ -643,7 +643,7 @@ export function CardDetailModal({
                 <button
                   type="button"
                   onClick={() =>
-                    requireMemberAction("Join in to report content for review.", () =>
+                    requireSignedInAction("Join in to report content for review.", () =>
                       setReportOpen((prev) => !prev)
                     )
                   }
@@ -801,12 +801,12 @@ export function CardDetailModal({
                         }}
                         onDelete={() => deleteComment(cmt.id)}
                         onReact={(kind) =>
-                          requireMemberAction("Join in to react to comments.", () =>
+                          requireSignedInAction("Join in to react to comments.", () =>
                             toggleCommentReaction(cmt.id, kind)
                           )
                         }
                         onReplyClick={() =>
-                          requireMemberAction("Join in to reply to this comment.", () =>
+                          requireSignedInAction("Join in to reply to this comment.", () =>
                             setReplyingToId((prev) => (prev === cmt.id ? null : cmt.id))
                           )
                         }
@@ -836,7 +836,7 @@ export function CardDetailModal({
                               }}
                               onDelete={() => deleteComment(rep.id)}
                               onReact={(kind) =>
-                                requireMemberAction("Join in to react to replies.", () =>
+                                requireSignedInAction("Join in to react to replies.", () =>
                                   toggleCommentReaction(rep.id, kind)
                                 )
                               }
@@ -903,7 +903,7 @@ export function CardDetailModal({
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder={
-                    role === "visitor" || role === "onboarding"
+                    role === "visitor"
                       ? "Join with one spark to leave a note..."
                       : "Share a curious thought..."
                   }
