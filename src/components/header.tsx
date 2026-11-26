@@ -9,7 +9,6 @@ import {
   LogOut,
   Plus,
   Sparkles,
-  UserRound,
 } from "lucide-react";
 import { useCommunity } from "@/context/community-context";
 import { cn } from "@/lib/cn";
@@ -35,7 +34,6 @@ export function Header({
     notifications,
     unreadNotificationCount,
     markAllNotificationsRead,
-    openGateModal,
     requireMemberAction,
     setRole,
     saves,
@@ -235,20 +233,6 @@ export function Header({
                 Sign up
               </Link>
             </div>
-          ) : role === "onboarding" ? (
-            <button
-              type="button"
-              data-tone="cobalt"
-              onClick={() =>
-                openGateModal(
-                  "Finish your one-step intro to unlock posting, saving, and discussions."
-                )
-              }
-              className="toy-button inline-flex h-10 items-center gap-1.5 rounded-2xl px-4 text-[15px] font-bold"
-            >
-              <UserRound className="h-4 w-4" />
-              <span>Finish intro</span>
-            </button>
           ) : (
             <div className="relative" ref={accountMenuRef}>
               <button
